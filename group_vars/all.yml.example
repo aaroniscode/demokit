@@ -1,0 +1,98 @@
+---
+#
+### Required Variables ###
+#
+
+# Ansible will use this key file to SSH into hosts and configure
+# Must pair the aws_key_public_key_file below
+ansible_ssh_private_key_file: ~/.ssh/aws_ansible.pem
+
+# Currently only Ubuntu 16.04 is supported
+ansible_ssh_user: ubuntu
+
+# Instances will be dynamically created using playbooks in aws directory
+# These can/should be edited to meet your needs
+aws_ec2:
+  ucp:
+    count: 1
+    instance: t2.medium
+    security_groups:
+      - default
+      - ssh
+    tags:
+      - manager_nodes
+  dtr:
+    count: 1
+    instance: t2.medium
+    security_groups:
+      - default
+      - ssh
+    tags:
+      - registry_nodes
+      - worker_nodes
+  linux:
+    instance: t2.micro
+    count: 3
+    security_groups:
+      - default
+      - ssh
+    tags:
+      - worker_nodes
+
+# AWS key pair requires a unique name in a region
+aws_key_name: "{{ aws_tags.Owner }}"
+# AWS key pair can be created dynamically by public key that matches private key above
+aws_key_public_key_file: ~/.ssh/aws_ansible.pub
+
+# Default AWS profile and region to use for all AWS resources
+aws_profile: default
+aws_region: us-east-1
+
+aws_route53_domain: example.com
+
+# Uncomment and set if you have a separate AWS account managing route53
+#aws_route53_profile: personal
+
+# Security groups will be dynamically created and updated
+# Apply the groups to the aws_ec2 dictionary above
+aws_security_groups:
+  default:
+    rules:
+      - proto: all
+        group_name: default
+      - proto: tcp
+        ports:
+          - 8443
+        cidr_ip: 0.0.0.0/0
+  ssh:
+    rules:
+      - proto: tcp
+        ports:
+          - 22
+        cidr_ip: 0.0.0.0/0
+
+# These tags are placed on every AWS resource to track ownership
+# You MUST include these tags in the ec2.ini dynamic inventory configuation file
+aws_tags:
+  Owner: your_username
+  Environment: demo
+
+# Ansible identifies a VPC uniquely using name/CIDR
+# Since VPC CIDRs can be duplicated, provide a unique VPC name
+# A blank name will modify the default VPC
+aws_vpc_name: "{{ aws_tags.Owner + '-' + aws_tags.Environment }}"
+
+#
+### Optional Variables ###
+#
+
+# NOTE: license file path relative to where docker_ee.yml playbook is located
+#docker_ee_license_file: demos/licenses/docker_subscription.lic
+#docker_ee_url: "https://storebits.docker.com/ee/linux/sub-abcedf12-abcd-abcd-abcd-abcdef123456"
+
+# The example values below are the defaults
+# They are set in role-name/defaults/main.yaml
+
+#docker_ee_engine_version: stable-17.06
+#ucp_password: password
+#ucp_version: latest

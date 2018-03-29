@@ -1,0 +1,2 @@
+---
+- include_tasks: "{{ aws_vpc_state }}.yml"

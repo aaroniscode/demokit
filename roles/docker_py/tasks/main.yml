@@ -1,0 +1,18 @@
+---
+- block:
+
+  - name: install pip
+    apt:
+      name: "{{ item }}"
+      install_recommends: no
+      state: present
+    with_items:
+      - python-pip
+      - python-setuptools
+      - python-wheel
+
+  - name: install docker-py using pip
+    pip:
+      name: docker-py
+
+  become: true

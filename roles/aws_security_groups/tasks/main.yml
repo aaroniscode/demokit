@@ -1,0 +1,24 @@
+---
+- name: generates aws filter
+  set_fact:
+    aws_tags_formatted: >
+      {{ aws_tags_formatted | default({}) | combine(
+          { 'tag:' + item.key: item.value }
+        )
+      }}
+  loop_control:
+    label: "{{ item.key }}"
+  with_dict: "{{ aws_tags }}"
+
+- name: find unique VPC using tags
+  ec2_vpc_net_facts:
+    filters: "{{ aws_tags_formatted }}"
+    profile: "{{ aws_security_groups_profile }}"
+    region: "{{ aws_security_groups_region }}"
+  register: find_vpc_result
+  failed_when: (find_vpc_result.vpcs | count != 1) and aws_security_groups_state == "present"
+
+- include_tasks: "{{ aws_security_groups_state }}.yml"
+  vars:
+    aws_sg_vpc_id: "{{ find_vpc_result.vpcs[0].id }}"
+  when: find_vpc_result.vpcs | count == 1

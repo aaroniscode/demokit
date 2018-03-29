@@ -1,0 +1,25 @@
+---
+- name: check required variables
+  fail:
+    msg: Variable {{ item }} is not defined
+  when: item not in vars
+  with_items: "{{ swarm_worker_required_vars }}"
+
+- name: check swarm status
+  shell: docker info | awk '/^Swarm/ { print $2 }'
+  register: swarm_status
+  changed_when: false
+
+- block:
+
+  - name: get swarm join token
+    shell: docker swarm join-token worker | grep token
+    changed_when: false
+    delegate_to: "{{ groups[swarm_worker_manager_group] | first }}"
+    register: join_command
+    run_once: true
+
+  - name: add node to the swarm
+    command: "{{ join_command.stdout | trim }}"
+
+  when: swarm_status.stdout == "inactive"

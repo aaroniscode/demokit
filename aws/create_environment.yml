@@ -1,0 +1,8 @@
+---
+- name: create required AWS infrastructure
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: aws_key
+    - role: aws_vpc
+    - role: aws_security_groups

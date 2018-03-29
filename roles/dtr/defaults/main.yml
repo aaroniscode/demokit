@@ -1,0 +1,4 @@
+---
+dtr_replica_http_port: 8080
+dtr_replica_https_port: 8443
+dtr_version: latest

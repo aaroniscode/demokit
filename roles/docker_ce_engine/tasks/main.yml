@@ -1,0 +1,36 @@
+---
+- block:
+
+  - name: add Docker’s official GPG key
+    apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      state: present
+
+  - name: add Docker CE repository
+    apt_repository:
+      repo: deb https://download.docker.com/linux/ubuntu xenial stable
+      state: present
+
+  - name: install Docker CE
+    apt:
+      name: docker-ce
+      state: present
+
+  - name: add ubuntu user to docker group
+    user:
+      name: ubuntu
+      groups: docker
+      append: yes
+
+# Currently buggy, temporary work-around below
+#
+#  - name: reset ssh connection to allow user changes to affect 'current login user'
+#    meta: reset_connection
+
+  - name: reset ssh connection to allow user changes to affect 'current login user'
+    shell: sleep 1; pkill -u {{ ansible_ssh_user }} sshd
+    async: 3
+    poll: 2
+    changed_when: false
+
+  become: true

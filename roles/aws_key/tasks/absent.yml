@@ -1,0 +1,7 @@
+---
+- name: delete AWS key pair {{ aws_key_name }}
+  ec2_key:
+    name: "{{ aws_key_name }}"
+    profile: "{{ aws_profile }}"
+    region: "{{ aws_region }}"
+    state: absent

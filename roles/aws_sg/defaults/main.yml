@@ -1,0 +1,12 @@
+---
+aws_sg_name: "default"
+aws_sg_description: "{{ 'default VPC security group' if aws_sg_name == 'default' else aws_sg_name }}"
+aws_sg_profile: "{{ aws_profile }}"
+aws_sg_region: "{{ aws_region }}"
+aws_sg_rules:
+  - proto: all
+    group_name: "{{ aws_sg_name }}"
+aws_sg_state: present
+aws_sg_tags: "{{ aws_tags }}"
+# If no VPC id is given it will modify the default VPC
+aws_sg_vpc_id: null

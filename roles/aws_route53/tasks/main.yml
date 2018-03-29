@@ -1,0 +1,8 @@
+---
+- name: check required variables
+  fail:
+    msg: Variable {{ item }} is not defined
+  when: item not in vars
+  with_items: "{{ aws_route53_required_vars }}"
+
+- include_tasks: "{{ aws_route53_state }}.yml"

@@ -1,0 +1,55 @@
+---
+- name: create VPC {{ aws_vpc_name }}
+  ec2_vpc_net:
+    name: "{{ aws_vpc_name }}"
+    cidr_block: "{{ aws_vpc_cidr_block }}"
+    profile: "{{ aws_vpc_profile }}"
+    region: "{{ aws_vpc_region }}"
+    state: present
+    tags: "{{ aws_vpc_tags }}"
+  register: vpc_result
+
+- name: check {{ vpc_result.vpc.id }} is not the Default VPC"
+  fail:
+    msg: "aws_vpc role will not modify the Default VPC for safety."
+  when: vpc_result.vpc.is_default == True
+
+- name: create public subnet {{ aws_vpc_subnet }} in {{ vpc_result.vpc.id }}
+  ec2_vpc_subnet:
+    cidr: "{{ aws_vpc_subnet }}"
+    map_public: yes
+    profile: "{{ aws_vpc_profile }}"
+    region: "{{ aws_vpc_region }}"
+    tags: "{{ aws_vpc_tags }}"
+    vpc_id: "{{ vpc_result.vpc.id }}"
+
+- name: create internet gateway in {{ vpc_result.vpc.id }}
+  ec2_vpc_igw:
+    profile: "{{ aws_vpc_profile }}"
+    region: "{{ aws_vpc_region }}"
+    tags: "{{ aws_vpc_tags }}"
+    vpc_id: "{{ vpc_result.vpc.id }}"
+  register: igw_result
+
+- name: lookup main route table in {{ vpc_result.vpc.id }}
+  ec2_vpc_route_table_facts:
+    filters:
+      association.main: "true"
+      vpc-id: "{{ vpc_result.vpc.id }}"
+    profile: "{{ aws_vpc_profile }}"
+    region: "{{ aws_vpc_region }}"
+  register: route_table_result
+
+- name: create default route to the internet in {{ vpc_result.vpc.id }}
+  ec2_vpc_route_table:
+    lookup: id
+    profile: "{{ aws_vpc_profile }}"
+    region: "{{ aws_vpc_region }}"
+    routes:
+      - dest: 0.0.0.0/0
+        gateway_id: "{{ igw_result.gateway_id }}"
+    route_table_id: "{{ route_table_result.route_tables[0].id }}"
+    subnets:
+      - "{{ aws_vpc_subnet }}"
+    tags: "{{ aws_vpc_tags }}"
+    vpc_id: "{{ vpc_result.vpc.id }}"

@@ -1,0 +1,36 @@
+---
+- block:
+
+  - name: add Docker’s official GPG key
+    apt_key:
+      url: "{{ docker_ee_url }}/ubuntu/gpg"
+      state: present
+
+  - name: add Docker EE repository
+    apt_repository:
+      repo: "deb [arch=amd64] {{ docker_ee_url }}/ubuntu xenial {{ docker_ee_engine_version }}"
+      state: present
+
+  - name: install Docker EE
+    apt:
+      name: docker-ee
+      state: present
+
+  - name: add ubuntu user to docker group
+    user:
+      name: ubuntu
+      groups: docker
+      append: yes
+
+# Currently buggy, temporary work-around below
+#
+#  - name: reset ssh connection to allow user changes to affect 'current login user'
+#    meta: reset_connection
+
+  - name: reset ssh connection to allow user changes to affect 'current login user'
+    shell: sleep 1; pkill -u {{ ansible_ssh_user }} sshd
+    async: 3
+    poll: 2
+    changed_when: false
+
+  become: true

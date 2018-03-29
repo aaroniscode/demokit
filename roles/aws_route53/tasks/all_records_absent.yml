@@ -1,0 +1,47 @@
+---
+# Route 53 deletes are really change requests that require the current value
+# To perform a delete, first get the record and pass the values back
+- name: lookup all hosted zones
+  route53_facts:
+    profile: "{{ aws_route53_profile }}"
+    query: hosted_zone
+  register: hosted_zones
+
+- name: find {{ aws_route53_domain }} hosted zone
+  set_fact:
+    aws_route53_hosted_zone: >
+      {{
+        hosted_zones.HostedZones
+        | selectattr('Name', 'equalto', aws_route53_domain + '.')
+        | list
+        | first
+      }}
+
+- name: find record sets for {{ aws_route53_domain }}
+  route53_facts:
+    profile: "{{ aws_route53_profile }}"
+    query: record_sets
+    hosted_zone_id: "{{ aws_route53_hosted_zone.Id }}"
+  register: record_sets
+
+- name: identify all the A records
+  set_fact:
+    a_records: >
+      {{
+        record_sets.ResourceRecordSets
+        | selectattr('Type', 'equalto', 'A')
+        | list
+      }}
+
+- name: remove all A records
+  route53:
+    profile: "{{ aws_route53_profile }}"
+    record: "{{ item.Name }}"
+    state: delete
+    ttl: "{{ item.TTL }}"
+    type: "{{ item.Type }}"
+    value: "{{ item.ResourceRecords | map(attribute='Value') | list }}"
+    zone: "{{ aws_route53_domain }}"
+  loop_control:
+    label: "{{ item.Name }}"
+  with_items: "{{ a_records }}"

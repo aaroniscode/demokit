@@ -1,0 +1,7 @@
+---
+aws_key_name: "default"
+aws_key_profile: "{{ aws_profile }}"
+aws_key_region: "{{ aws_region }}"
+aws_key_required_vars:
+  - aws_key_public_key_file
+aws_key_state: present

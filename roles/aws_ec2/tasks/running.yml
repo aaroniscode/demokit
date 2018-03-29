@@ -1,0 +1,118 @@
+---
+- name: start any stopped ec2 instances
+  ec2:
+    instance_id: "{{ item.instance_id }}"
+    profile: "{{ aws_ec2_profile }}"
+    region: "{{ aws_ec2_region }}"
+    state: running
+    wait: true
+  async: 300
+  loop_control:
+    label: "{{ item.tags.Name }}"
+  poll: 0
+  register: ec2_async_start
+  with_items: >
+    {{
+      find_ec2.instances | selectattr('state.name', 'equalto', 'stopped') | list
+    }}
+
+- name: find latest Ubuntu 16.04 LTS ami
+  ec2_ami_find:
+    name: "*ubuntu-xenial-16.04-amd64-server-*"
+    no_result_action: fail
+    owner: 099720109477
+    profile: "{{ aws_ec2_profile }}"
+    region: "{{ aws_ec2_region }}"
+    sort: name
+    sort_order: descending
+    sort_end: 1
+    virtualization_type: hvm
+  register: ami_find
+
+- name: using {{ ami_find.results[0].ami_id }}
+  set_fact:
+    aws_ami: "{{ ami_find.results[0].ami_id }}"
+
+- name: find subnet using tags
+  ec2_vpc_subnet_facts:
+    filters: "{{ aws_ec2_tags_formatted }}"
+    profile: "{{ aws_ec2_profile }}"
+    region: "{{ aws_ec2_region }}"
+  register: find_subnet_result
+  failed_when: find_subnet_result.subnets | count != 1
+
+- name: using {{ find_subnet_result.subnets[0].id }}
+  set_fact:
+    aws_subnet_id: "{{ find_subnet_result.subnets[0].id }}"
+
+- name: generate ec2 instance list
+  set_fact:
+    aws_ec2_formatted: >
+      {{ aws_ec2_formatted | default([]) +
+        [
+          item.value | combine({
+            'name': item.key,
+            'suffix_list': lookup('sequence', item.value.count | string).split(','),
+            'tag_dictionary': dict.fromkeys(item.value.tags, '')
+          })
+        ]
+      }}
+  loop_control:
+    label: "{{ item.key }}"
+  with_dict: "{{ aws_ec2 }}"
+
+- name: wait for stopped ec2 instances to start
+  async_status:
+    jid: "{{ item.ansible_job_id }}"
+  register: ec2
+  until: ec2.finished
+  retries: 300
+  loop_control:
+    label: "{{ item.item.tags.Name }}"
+  with_items: "{{ ec2_async_start.results }}"
+
+- name: "create ec2 instances (NOTE: always reports 'changed')"
+  ec2:
+    count_tag: >
+      {{
+        {
+          'Name': item.0.name + item.1 + '.' + aws_ec2_domain
+        }
+        | combine(item.0.tag_dictionary)
+        | combine(aws_ec2_tags)
+      }}
+    exact_count: 1
+    group: "{{ item.0.security_groups }}"
+    image: "{{ aws_ami }}"
+    instance_tags: >
+      {{
+        {
+          'Name': item.0.name + item.1 + '.' + aws_ec2_domain
+        }
+        | combine(item.0.tag_dictionary)
+        | combine(aws_ec2_tags)
+      }}
+    instance_type: "{{ item.0.instance }}"
+    key_name: "{{ aws_ec2_key_name }}"
+    profile: "{{ aws_ec2_profile }}"
+    region: "{{ aws_ec2_region }}"
+    vpc_subnet_id: "{{ aws_subnet_id }}"
+    wait: true
+  async: 300
+  loop_control:
+    label: "{{ item.0.name + item.1 + '.' + aws_ec2_domain }}"
+  poll: 0
+  register: ec2_async_create
+  with_subelements:
+    - "{{ aws_ec2_formatted }}"
+    - suffix_list
+
+- name: wait for new ec2 instances to start
+  async_status:
+    jid: "{{ item.ansible_job_id }}"
+  register: ec2
+  until: ec2.finished
+  retries: 300
+  loop_control:
+    label: "{{ item.item[0].name }}{{ item.item[1] + '.' + aws_ec2_domain }}"
+  with_items: "{{ ec2_async_create.results }}"

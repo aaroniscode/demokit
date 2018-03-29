@@ -1,0 +1,3 @@
+---
+swarm_worker_required_vars:
+  - swarm_worker_manager_group

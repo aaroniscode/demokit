@@ -1,0 +1,22 @@
+---
+- name: install Docker
+  hosts: ec2
+  roles:
+    - set_hostname
+    - docker_py
+    - docker_ce_engine
+
+- name: initialize swarm cluster
+  hosts: "{{ groups['tag_manager_nodes'] | first }}"
+  roles:
+    - role: swarm_manager
+  tags:
+    - managers
+
+- name: add worder nodes to the cluster
+  hosts: tag_worker_nodes
+  roles:
+    - role: swarm_worker
+      swarm_worker_manager_group: tag_manager_nodes
+  tags:
+    - workers

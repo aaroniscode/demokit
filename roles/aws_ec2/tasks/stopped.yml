@@ -1,0 +1,10 @@
+---
+- name: stop ec2 instances
+  ec2:
+    instance_id: "{{ item.instance_id }}"
+    profile: "{{ aws_ec2_profile }}"
+    region: "{{ aws_ec2_region }}"
+    state: 'stopped'
+  loop_control:
+    label: "{{ item.tags.Name }}"
+  with_items: "{{ find_ec2.instances | selectattr('state.name', 'equalto', 'running') | list }}"

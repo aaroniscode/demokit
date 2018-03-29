@@ -1,0 +1,33 @@
+---
+- name: pull UCP install image
+  docker_image:
+    name: "docker/ucp:{{ ucp_version }}"
+
+- name: check swarm status
+  shell: docker info | awk '/^Swarm/ { print $2 }'
+  register: swarm_status
+  changed_when: false
+
+- block:
+
+  - name: install UCP
+    docker_container:
+      command:
+        - install
+        - "--host-address {{ ansible_default_ipv4.address }}"
+        - "--admin-password {{ ucp_password }}"
+        - "--controller-port {{ ucp_controller_port }}"
+        - "--san {{ ucp_san }}"
+        - "--license {{ ucp_license }}"
+      detach: false
+      name: ucp
+      image: "docker/ucp:{{ ucp_version }}"
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+
+  - name: wait for UCP install to finish
+    wait_for:
+      port: "{{ ucp_controller_port }}"
+      state: started
+
+  when: swarm_status.stdout == "inactive"

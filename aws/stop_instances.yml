@@ -1,0 +1,14 @@
+---
+- name: stop ec2 instances
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: aws_ec2
+      aws_ec2_state: stopped
+
+- name: assign dns
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: aws_route53
+      aws_route53_state: absent

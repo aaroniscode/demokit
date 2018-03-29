@@ -1,0 +1,5 @@
+---
+aws_security_groups: {}
+aws_security_groups_state: present
+aws_security_groups_profile: "{{ aws_profile }}"
+aws_security_groups_region: "{{ aws_region }}"

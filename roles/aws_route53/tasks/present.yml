@@ -1,0 +1,14 @@
+---
+- name: create dns records
+  route53:
+    overwrite: yes
+    profile: "{{ aws_route53_profile }}"
+    record: "{{ item }}"
+    state: present
+    ttl: "{{ aws_route53_ttl }}"
+    type: A
+    value: "{{ hostvars[item].ec2_ip_address }}"
+    zone: "{{ aws_route53_domain }}"
+  loop_control:
+    label: "{{ item }}"
+  with_items: "{{ groups['ec2'] }}"

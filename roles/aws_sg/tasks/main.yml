@@ -1,0 +1,10 @@
+---
+- name: create sg {{ aws_sg_name }} in {{ aws_sg_vpc_id }}
+  ec2_group:
+    name: "{{ aws_sg_name }}"
+    description: "{{ aws_sg_description }}"
+    profile: "{{ aws_sg_profile }}"
+    region: "{{ aws_sg_region }}"
+    rules: "{{ aws_sg_rules }}"
+    tags: "{{ aws_sg_tags }}"
+    vpc_id: "{{ aws_sg_vpc_id }}"

@@ -1,0 +1,16 @@
+---
+- name: check swarm status
+  shell: docker info | awk '/^Swarm/ { print $2 }'
+  register: swarm_status
+  changed_when: false
+
+- block:
+
+  - name: initialize swarm cluster
+    shell: docker swarm init
+    register: init_result
+
+  - debug:
+      var: init_result
+
+  when: swarm_status.stdout == "inactive"

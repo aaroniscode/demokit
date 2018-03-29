@@ -1,0 +1,78 @@
+---
+- name: find VPC
+  ec2_vpc_net_facts:
+    filters:
+      "tag:Name": "{{ aws_vpc_name }}"
+      cidr: "{{ aws_vpc_cidr_block }}"
+    profile: "{{ aws_vpc_profile }}"
+    region: "{{ aws_vpc_region }}"
+  register: find_vpc_result
+
+- name: "check for multiple VPC's with the same name and CIDR block"
+  fail:
+    msg: "Found multiple VPC's. aws_vpc role will only remove a single VPC for safety."
+  when: find_vpc_result.vpcs | count > 1
+
+- block:
+
+  - name: "check VPC is not the Default VPC"
+    fail:
+      msg: "aws_vpc role will not remove the Default VPC for safety."
+    when: find_vpc_result.vpcs[0].is_default == True
+
+  - name: "find subnets to delete"
+    ec2_vpc_subnet_facts:
+      filters:
+        vpc-id: "{{ find_vpc_result.vpcs[0].id }}"
+      profile: "{{ aws_vpc_profile }}"
+      region: "{{ aws_vpc_region }}"
+    register: find_subnets_result
+
+  - name: delete subnets
+    ec2_vpc_subnet:
+      cidr: "{{ item.cidr_block }}"
+      profile: "{{ aws_vpc_profile }}"
+      region: "{{ aws_vpc_region }}"
+      state: absent
+      vpc_id: "{{ item.vpc_id }}"
+    loop_control:
+      label: "{{ item.cidr_block }}"
+    with_items: "{{ find_subnets_result.subnets }}"
+
+  - name: delete internet gateway
+    ec2_vpc_igw:
+      profile: "{{ aws_vpc_profile }}"
+      region: "{{ aws_vpc_region }}"
+      state: absent
+      vpc_id: "{{ find_vpc_result.vpcs[0].id }}"
+
+  - name: find route tables to delete
+    ec2_vpc_route_table_facts:
+      filters:
+        association.main: "false"
+        vpc-id: "{{ find_vpc_result.vpcs[0].id }}"
+      profile: "{{ aws_vpc_profile }}"
+      region: "{{ aws_vpc_region }}"
+    register: find_route_tables_result
+
+  - name: delete route tables
+    ec2_vpc_route_table:
+      lookup: id
+      profile: "{{ aws_vpc_profile }}"
+      region: "{{ aws_vpc_region }}"
+      route_table_id: "{{ item.id }}"
+      state: absent
+      vpc_id: "{{ find_vpc_result.vpcs[0].id }}"
+    loop_control:
+      label: "{{ item.id }}"
+    with_items: "{{ find_route_tables_result.route_tables }}"
+
+  - name: delete VPC
+    ec2_vpc_net:
+      name: "{{ aws_vpc_name }}"
+      cidr_block: "{{ aws_vpc_cidr_block }}"
+      profile: "{{ aws_vpc_profile }}"
+      region: "{{ aws_vpc_region }}"
+      state: absent
+
+  when: find_vpc_result.vpcs | count == 1

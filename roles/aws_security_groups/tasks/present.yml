@@ -1,0 +1,10 @@
+---
+- name: create security groups in {{ aws_sg_vpc_id }}
+  include_role:
+    name: aws_sg
+  vars:
+    aws_sg_name: "{{ item.key }}"
+    aws_sg_rules: "{{ item.value.rules }}"
+  with_dict: "{{ aws_security_groups }}"
+  loop_control:
+    label: "{{ item.key }}"

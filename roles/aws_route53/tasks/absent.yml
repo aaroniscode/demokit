@@ -1,0 +1,30 @@
+---
+# Route 53 deletes are really change requests that require the current value
+# To perform a delete, first get the record and pass the values back
+- name: lookup A records
+  route53:
+    profile: "{{ aws_route53_profile }}"
+    state: get
+    record: "{{ item }}"
+    type: A
+    zone: "{{ aws_route53_domain }}"
+  register: a_records
+  loop_control:
+    label: "{{ item }}"
+  with_items: "{{ groups['ec2'] }}"
+
+- name: remove A records
+  route53:
+    profile: "{{ aws_route53_profile }}"
+    record: "{{ item.set.record }}"
+    state: delete
+    ttl: "{{ item.set.ttl }}"
+    type: "{{ item.set.type }}"
+    value: "{{ item.set.value }}"
+    zone: "{{ aws_route53_domain }}"
+  loop_control:
+    label: "{{ item.set.record }}"
+  with_items: >
+    {{
+      a_records.results | selectattr('set', '!=', {}) | list
+    }}

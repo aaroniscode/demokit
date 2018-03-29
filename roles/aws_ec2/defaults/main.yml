@@ -1,0 +1,7 @@
+---
+aws_ec2_domain: "{{ aws_route53_domain }}"
+aws_ec2_key_name: "{{ aws_key_name }}"
+aws_ec2_state: running
+aws_ec2_profile: "{{ aws_profile }}"
+aws_ec2_region: "{{ aws_region }}"
+aws_ec2_tags: "{{ aws_tags }}"

@@ -1,0 +1,2 @@
+#!/bin/bash
+aws ec2 describe-instances --filters Name=instance-state-name,Values=pending,running,shutting-down,stopping,stopped --query 'Reservations[].Instances[].[Placement.AvailabilityZone,Tags[?Key==`Name`] | [0].Value,State.Name,InstanceType,InstanceId,Platform]' --output table $@

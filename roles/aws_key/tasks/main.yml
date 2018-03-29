@@ -1,0 +1,8 @@
+---
+- name: check required variables
+  fail:
+    msg: Variable {{ item }} is not defined
+  when: item not in vars
+  with_items: "{{ aws_key_required_vars }}"
+
+- include_tasks: "{{ aws_key_state }}.yml"
