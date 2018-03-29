@@ -1,0 +1,12 @@
+---
+- name: check required variables
+  fail:
+    msg: Variable {{ item }} is not defined
+  when: item not in vars
+  with_items: "{{ docker_login_required_vars }}"
+
+- name: log into Docker Hub
+  docker_login:
+    username: "{{ docker_login_username }}"
+    email: "{{ docker_login_email }}"
+    password: "{{ docker_login_password }}"
