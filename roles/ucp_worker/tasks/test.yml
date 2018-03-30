@@ -1,0 +1,22 @@
+- name: login when testing development versions
+  include_role:
+    name: docker_login
+
+- name: get list of UCP images
+  docker_container:
+    cleanup: true
+    command:
+      - images
+      - "--list"
+      - "--image-version dev:"
+    detach: false
+    image: dockereng/ucp:{{ ucp_version }}
+    name: ucp
+    tty: true
+  changed_when: false
+  register: ucp_image_list
+
+- name: pull all UCP images
+  docker_image:
+    name: "{{ item }}"
+  with_items: "{{ ucp_image_list.ansible_facts.docker_container.Output.splitlines() }}"

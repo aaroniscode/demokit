@@ -1,0 +1,4 @@
+---
+ucp_version: latest
+ucp_worker_required_vars:
+  - ucp_worker_ucp_manager_group
