@@ -75,7 +75,7 @@ aws_security_groups:
 # You MUST include these tags in the ec2.ini dynamic inventory configuation file
 aws_tags:
   Owner: your_username
-  Environment: demo
+  Environment: demokit
 
 # Ansible identifies a VPC uniquely using name/CIDR
 # Since VPC CIDRs can be duplicated, provide a unique VPC name
