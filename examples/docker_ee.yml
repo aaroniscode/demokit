@@ -5,6 +5,8 @@
     - set_hostname
     - docker_py
     - docker_ee_engine
+  tags:
+    - engine
 
 - name: install UCP
   hosts: "{{ groups['tag_manager_nodes'] | first }}"
@@ -19,8 +21,8 @@
 - name: join nodes to the cluster
   hosts: tag_worker_nodes
   roles:
-    - role: swarm_worker
-      swarm_worker_manager_group: tag_manager_nodes
+    - role: ucp_worker
+      ucp_worker_ucp_manager_group: tag_manager_nodes
   tags:
     - workers
 
