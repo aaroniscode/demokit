@@ -1,14 +1,38 @@
 ---
-- name: pull UCP install image
-  docker_image:
-    name: "docker/ucp:{{ ucp_version }}"
-
 - name: check swarm status
   shell: docker info | awk '/^Swarm/ { print $2 }'
   register: swarm_status
   changed_when: false
 
 - block:
+
+  - name: login when testing development versions
+    include_role:
+      name: docker_login
+    when: ucp_test
+
+  - name: pull UCP install image
+    docker_image:
+      name: "{{ ucp_namespace }}/ucp:{{ ucp_version }}"
+
+  - name: get list of UCP images
+    docker_container:
+      cleanup: true
+      command:
+        - images
+        - "--list"
+        - "{{ '--image-version dev:' if ucp_test else '' }}"
+      detach: false
+      image: "{{ ucp_namespace }}/ucp:{{ ucp_version }}"
+      name: ucp
+      tty: true
+    changed_when: false
+    register: foo
+
+  - name: pull required UCP images
+    docker_image:
+      name: "{{ item }}"
+    with_items: "{{ foo.ansible_facts.docker_container.Output.splitlines() }}"
 
   - name: install UCP
     docker_container:
@@ -19,9 +43,10 @@
         - "--controller-port {{ ucp_controller_port }}"
         - "--san {{ ucp_san }}"
         - "--license {{ ucp_license }}"
+        - "{{ '--image-version dev:' if ucp_test else '' }}"
       detach: false
       name: ucp
-      image: "docker/ucp:{{ ucp_version }}"
+      image: "{{ ucp_namespace }}/ucp:{{ ucp_version }}"
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock
 
