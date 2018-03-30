@@ -27,12 +27,12 @@
       name: ucp
       tty: true
     changed_when: false
-    register: foo
+    register: ucp_image_list
 
   - name: pull required UCP images
     docker_image:
       name: "{{ item }}"
-    with_items: "{{ foo.ansible_facts.docker_container.Output.splitlines() }}"
+    with_items: "{{ ucp_image_list.ansible_facts.docker_container.Output.splitlines() }}"
 
   - name: install UCP
     docker_container:
