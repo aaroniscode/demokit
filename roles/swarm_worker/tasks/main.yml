@@ -5,7 +5,7 @@
   when: item not in vars
   with_items: "{{ swarm_worker_required_vars }}"
 
-- name: check swarm status
+- name: check if already joined a swarm
   shell: docker info | awk '/^Swarm/ { print $2 }'
   register: swarm_status
   changed_when: false
