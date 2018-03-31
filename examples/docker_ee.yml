@@ -12,7 +12,6 @@
   hosts: "{{ groups['tag_manager_nodes'] | first }}"
   roles:
     - role: ucp
-      ucp_controller_port: 8443
       ucp_license: "{{ lookup('file', docker_ee_license_file) | to_json }}"
       ucp_san: "{{ groups['tag_manager_nodes'] | first }}"
   tags:
@@ -31,8 +30,5 @@
   roles:
     - role: dtr
       dtr_ucp_node: "{{ groups['tag_registry_nodes'] | first }}"
-      dtr_ucp_password: "{{ ucp_password | default('password') }}"
-      dtr_ucp_url: "{{ groups['tag_manager_nodes'] | first }}:8443"
-      dtr_external_url: "https://{{ groups['tag_registry_nodes'] | first }}:{{ dtr_replica_https_port }}"
   tags:
     - dtr
