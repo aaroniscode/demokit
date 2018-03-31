@@ -1,0 +1,48 @@
+- name: login when installing a test version
+  include_role:
+    name: docker_login
+  when: ucp_test
+
+- name: pull UCP install image
+  docker_image:
+    name: "{{ ucp_namespace }}/ucp:{{ ucp_version }}"
+
+- name: get list of UCP images
+  docker_container:
+    cleanup: true
+    command:
+      - images
+      - "--list"
+      - "{{ '--image-version dev:' if ucp_test else '' }}"
+    detach: false
+    image: "{{ ucp_namespace }}/ucp:{{ ucp_version }}"
+    name: ucp
+    tty: true
+  changed_when: false
+  register: ucp_image_list
+
+- name: pull required UCP images
+  docker_image:
+    name: "{{ item }}"
+  with_items: "{{ ucp_image_list.ansible_facts.docker_container.Output.splitlines() }}"
+
+- name: install UCP
+  docker_container:
+    command:
+      - install
+      - "--host-address {{ ansible_default_ipv4.address }}"
+      - "--admin-password {{ ucp_password }}"
+      - "--controller-port {{ ucp_controller_port }}"
+      - "--san {{ ucp_san }}"
+      - "--license {{ ucp_license }}"
+      - "{{ '--image-version dev:' if ucp_test else '' }}"
+    detach: false
+    name: ucp
+    image: "{{ ucp_namespace }}/ucp:{{ ucp_version }}"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+- name: wait for UCP web services to start
+  wait_for:
+    port: "{{ ucp_controller_port }}"
+    state: started

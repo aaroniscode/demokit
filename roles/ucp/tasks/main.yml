@@ -1,58 +1,8 @@
 ---
-- name: check swarm status
-  shell: docker info | awk '/^Swarm/ { print $2 }'
-  register: swarm_status
+- name: check if DTR is installed
+  shell: docker ps --filter name=ucp-controller -q
+  register: ucp_controller_container_id
   changed_when: false
 
-- block:
-
-  - name: login when testing development versions
-    include_role:
-      name: docker_login
-    when: ucp_test
-
-  - name: pull UCP install image
-    docker_image:
-      name: "{{ ucp_namespace }}/ucp:{{ ucp_version }}"
-
-  - name: get list of UCP images
-    docker_container:
-      cleanup: true
-      command:
-        - images
-        - "--list"
-        - "{{ '--image-version dev:' if ucp_test else '' }}"
-      detach: false
-      image: "{{ ucp_namespace }}/ucp:{{ ucp_version }}"
-      name: ucp
-      tty: true
-    changed_when: false
-    register: ucp_image_list
-
-  - name: pull required UCP images
-    docker_image:
-      name: "{{ item }}"
-    with_items: "{{ ucp_image_list.ansible_facts.docker_container.Output.splitlines() }}"
-
-  - name: install UCP
-    docker_container:
-      command:
-        - install
-        - "--host-address {{ ansible_default_ipv4.address }}"
-        - "--admin-password {{ ucp_password }}"
-        - "--controller-port {{ ucp_controller_port }}"
-        - "--san {{ ucp_san }}"
-        - "--license {{ ucp_license }}"
-        - "{{ '--image-version dev:' if ucp_test else '' }}"
-      detach: false
-      name: ucp
-      image: "{{ ucp_namespace }}/ucp:{{ ucp_version }}"
-      volumes:
-        - /var/run/docker.sock:/var/run/docker.sock
-
-  - name: wait for UCP install to finish
-    wait_for:
-      port: "{{ ucp_controller_port }}"
-      state: started
-
-  when: swarm_status.stdout == "inactive"
+- include_tasks: install.yml
+  when: ucp_controller_container_id.stdout_lines | count == 0
