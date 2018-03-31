@@ -1,0 +1,47 @@
+- name: login when installing a test version
+  include_role:
+    name: docker_login
+  when: dtr_test
+
+- name: pull DTR install image
+  docker_image:
+    name: "{{ dtr_namespace }}/dtr:{{ dtr_version }}"
+
+- name: get list of DTR images
+  docker_container:
+    cleanup: true
+    command:
+      - images
+    detach: false
+    image: "{{ dtr_namespace }}/dtr:{{ dtr_version }}"
+    name: dtr
+  changed_when: false
+  register: dtr_image_list
+
+- name: pull required DTR images
+  docker_image:
+    name: "{{ item }}"
+  with_items: "{{ dtr_image_list.ansible_facts.docker_container.Output.splitlines() }}"
+
+- name: install DTR
+  docker_container:
+    command:
+      - install
+      - "--ucp-node {{ dtr_ucp_node }}"
+      - "--replica-http-port {{ dtr_replica_http_port }}"
+      - "--replica-https-port {{ dtr_replica_https_port }}"
+      - "--ucp-insecure-tls"
+      - "--dtr-external-url {{ dtr_url }}"
+      - "--ucp-url {{ ucp_url }}"
+      - "--ucp-username admin"
+      - "--ucp-password {{ ucp_password }}"
+    detach: false
+    name: dtr
+    image: "{{ dtr_namespace }}/dtr:{{ dtr_version }}"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+- name: wait for DTR web services to start
+  wait_for:
+    port: "{{ dtr_replica_https_port }}"
+    state: started

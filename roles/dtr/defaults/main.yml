@@ -1,4 +1,11 @@
 ---
-dtr_replica_http_port: 8080
-dtr_replica_https_port: 8443
+dtr_namespace: "{{ 'docker' if not dtr_test else 'dockerhubenterprise' }}"
+dtr_replica_http_port: 80
+dtr_replica_https_port: 443
+dtr_required_vars:
+  - dtr_ucp_node
+  - dtr_url
+  - ucp_password
+  - ucp_url
 dtr_version: latest
+dtr_test: false

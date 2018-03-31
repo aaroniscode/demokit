@@ -1,32 +1,14 @@
 ---
-- name: pull DTR install image
-  docker_image:
-    name: "docker/dtr:{{ dtr_version }}"
+- name: check required variables
+  fail:
+    msg: Variable {{ item }} is not defined
+  when: item not in vars
+  with_items: "{{ dtr_required_vars }}"
 
-- block:
+- name: check if DTR is installed
+  shell: docker ps --filter name=dtr-registry -q
+  register: registry_container_id
+  changed_when: false
 
-  - name: install DTR
-    docker_container:
-      command:
-        - install
-        - "--ucp-node {{ dtr_ucp_node }}"
-        - "--replica-http-port {{ dtr_replica_http_port }}"
-        - "--replica-https-port {{ dtr_replica_https_port }}"
-        - "--ucp-insecure-tls"
-        - "--dtr-external-url {{ dtr_external_url }}"
-#        - "--dtr-external-url https://dtr1.{{ demo_domain }}:{{ dtr_replica_https_port }}"
-        - "--ucp-url {{ dtr_ucp_url }}"
-        - "--ucp-username admin"
-        - "--ucp-password {{ dtr_ucp_password }}"
-      detach: false
-      name: dtr
-      image: "docker/dtr:{{ dtr_version }}"
-      volumes:
-        - /var/run/docker.sock:/var/run/docker.sock
-
-  - name: wait for DTR install to finish
-    wait_for:
-      port: "{{ dtr_replica_https_port }}"
-      state: started
-
-  when: true #TODO what check should be made here?
+- include_tasks: install.yml
+  when: registry_container_id.stdout_lines | count == 0
