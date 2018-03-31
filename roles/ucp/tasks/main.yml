@@ -1,5 +1,5 @@
 ---
-- name: check if DTR is installed
+- name: check if UCP is installed
   shell: docker ps --filter name=ucp-controller -q
   register: ucp_controller_container_id
   changed_when: false
