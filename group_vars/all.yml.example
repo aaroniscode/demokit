@@ -82,17 +82,36 @@ aws_tags:
 # A blank name will modify the default VPC
 aws_vpc_name: "{{ aws_tags.Owner + '-' + aws_tags.Environment }}"
 
-#
+# NOTE: relative location from where docker_ee.yml playbook is located
+# If you copy docker_ee.yml and place in the demos directory then
+docker_ee_license_file: licenses/docker_subscription.lic
+docker_ee_url: "https://storebits.docker.com/ee/linux/sub-abcedf12-abcd-abcd-abcd-abcdef123456"
+
 ### Optional Variables ###
-#
 
-# NOTE: license file path relative to where docker_ee.yml playbook is located
-#docker_ee_license_file: demos/licenses/docker_subscription.lic
-#docker_ee_url: "https://storebits.docker.com/ee/linux/sub-abcedf12-abcd-abcd-abcd-abcdef123456"
+# Many of the variables below have sane defaults. You can review the default
+# values in role_name/defaults/main.yaml.
 
-# The example values below are the defaults
-# They are set in role-name/defaults/main.yaml
 
-#docker_ee_engine_version: stable-17.06
 #ucp_password: password
-#ucp_version: latest
+
+# Uncomment to install a test versions. Also set ucp_version correctly.
+#ucp_test: true
+
+# URL of the host or load balancer clients use to access UCP
+ucp_url: https://ucp1.{{ aws_route53_domain }}
+#ucp_version: 3.0.0-rc
+
+#docker_ee_engine_version: test-17.06
+
+# Uncomment when installing test versions of UCP or DTR
+#docker_login_username: your_username
+#docker_login_email: your@email.com
+#docker_login_password: your_password
+
+# Uncomment to install a test version. Also set dtr_version correctly.
+#dtr_test: true
+
+# URL of the host or load balancer clients use to access UCP
+dtr_url: https://dtr1.{{ aws_route53_domain }}
+#dtr_version: 2.5.0-rc1
