@@ -21,27 +21,9 @@
   tags: route53
 
 - name: wait for instances to boot
-  hosts: localhost
-  gather_facts: false
-  tasks:
-    - name: wait for SSH
-      wait_for:
-        host: "{{ hostvars[item].ec2_ip_address }}"
-        port: 22
-        search_regex: OpenSSH
-        state: started
-      loop_control:
-        label: "{{ item }}"
-      with_items: "{{ groups['ec2'] }}"
-
-- name: get instances ready for Ansible
   hosts: ec2
   gather_facts: false
   tasks:
-    - name: install python2.7
-      changed_when: output.stdout != ""
-      raw: bash -c "test -e /usr/bin/python || (sudo apt-get install -qy python-minimal)"
-      register: output
-  tags:
-    - ec2
-    - python
+    - name: wait for SSH/WinRM
+      wait_for_connection:
+  tags: wait

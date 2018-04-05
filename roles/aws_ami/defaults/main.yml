@@ -1,0 +1,3 @@
+---
+aws_ami_profile: "{{ aws_profile }}"
+aws_ami_region: "{{ aws_region }}"

@@ -1,0 +1,30 @@
+- name: find latest Ubuntu 16.04 LTS ami
+  ec2_ami_find:
+    name: "*ubuntu-xenial-16.04-amd64-server-*"
+    no_result_action: fail
+    owner: 099720109477
+    profile: "{{ aws_ami_profile }}"
+    region: "{{ aws_ami_region }}"
+    sort: name
+    sort_order: descending
+    sort_end: 1
+    virtualization_type: hvm
+  register: ami_ubuntu
+
+- name: find latest Windows Server 2016 ami
+  ec2_ami_find:
+    name: "Windows_Server-2016-English-Full-Base-*"
+    no_result_action: fail
+    platform: windows
+    profile: "{{ aws_ami_profile }}"
+    region: "{{ aws_ami_region }}"
+    sort: creationDate
+    sort_order: descending
+    sort_end: 1
+  register: ami_windows
+
+- name: store AMIs in lookup table by operating system
+  set_fact:
+    aws_ami:
+      ubuntu_1604: "{{ ami_ubuntu.results[0].ami_id }}"
+      windows_server_2016: "{{ ami_windows.results[0].ami_id }}"

@@ -1,7 +1,20 @@
 ---
 aws_ec2_domain: "{{ aws_route53_domain }}"
 aws_ec2_key_name: "{{ aws_key_name }}"
-aws_ec2_state: running
+aws_ec2_os_tag:
+  ubuntu_1604: ubuntu
+  windows_server_2016: windows
+aws_ec2_os_user_data:
+    ubuntu_1604:
+    windows_server_2016: "{{ aws_ec2_win_user_data }}"
 aws_ec2_profile: "{{ aws_profile }}"
 aws_ec2_region: "{{ aws_region }}"
+aws_ec2_state: running
 aws_ec2_tags: "{{ aws_tags }}"
+aws_ec2_win_admin_password: "{{ aws_windows_admin_password }}"
+aws_ec2_win_user_data: |
+  <powershell>
+  $admin = [adsi]("WinNT://./administrator, user")
+  $admin.PSBase.Invoke("SetPassword", "{{ aws_windows_admin_password }}")
+  Invoke-Expression ((New-Object System.Net.Webclient).DownloadString('https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1'))
+  </powershell>
