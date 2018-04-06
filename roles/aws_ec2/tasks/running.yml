@@ -1,21 +1,4 @@
 ---
-- name: start any stopped ec2 instances
-  ec2:
-    instance_id: "{{ item.instance_id }}"
-    profile: "{{ aws_ec2_profile }}"
-    region: "{{ aws_ec2_region }}"
-    state: running
-    wait: true
-  async: 300
-  loop_control:
-    label: "{{ item.tags.Name }}"
-  poll: 0
-  register: ec2_async_start
-  with_items: >
-    {{
-      find_ec2.instances | selectattr('state.name', 'equalto', 'stopped') | list
-    }}
-
 - name: lookup AMIs for {{ aws_ec2_region }} region
   include_role:
     name: aws_ami
@@ -32,7 +15,7 @@
   set_fact:
     aws_subnet_id: "{{ find_subnet_result.subnets[0].id }}"
 
-- name: prepare ec2 instances for launch
+- name: prepare ec2 instance list for launch
   set_fact:
     aws_ec2_formatted: >
       {{ aws_ec2_formatted | default([]) +
@@ -44,67 +27,47 @@
             'tag_dictionary': dict.fromkeys(
               item.value.tags | default([]) + [aws_ec2_os_tag[item.value.os]],
               ''
-            )
+            ) | combine(aws_ec2_tags)
           })
         ]
       }}
   loop_control:
     label: "{{ item.key + ', ' + item.value.instance + ', ' + aws_ami[item.value.os] }}"
   with_dict: "{{ aws_ec2 }}"
+  when:
+    - item.value.tags
+    - aws_ec2_limit_tag in item.value.tags or aws_ec2_limit_tag == aws_ec2_os_tag[item.value.os]
 
-- name: wait for stopped ec2 instances to start
-  async_status:
-    jid: "{{ item.ansible_job_id }}"
-  register: ec2
-  until: ec2.finished
-  retries: 300
-  loop_control:
-    label: "{{ item.item.tags.Name }}"
-  with_items: "{{ ec2_async_start.results }}"
-
-- name: "create ec2 instances (NOTE: always reports 'changed')"
-  ec2:
-    count_tag: >
-      {{
-        {
-          'Name': item.0.name + item.1 + '.' + aws_ec2_domain
-        }
-        | combine(item.0.tag_dictionary)
-        | combine(aws_ec2_tags)
-      }}
-    exact_count: 1
-    group: "{{ item.0.security_groups }}"
-    image: "{{ item.0.ami }}"
-    instance_tags: >
-      {{
-        {
-          'Name': item.0.name + item.1 + '.' + aws_ec2_domain
-        }
-        | combine(item.0.tag_dictionary)
-        | combine(aws_ec2_tags)
-      }}
+- name: start/create ec2 instances if needed
+  ec2_instance:
+    image_id: "{{ item.0.ami }}"
     instance_type: "{{ item.0.instance }}"
     key_name: "{{ aws_ec2_key_name }}"
+    name: "{{ item.0.name + item.1 + '.' + aws_ec2_domain }}"
     profile: "{{ aws_ec2_profile }}"
     region: "{{ aws_ec2_region }}"
+    security_groups: "{{ item.0.security_groups }}"
+    state: started
+    tags: "{{ item.0.tag_dictionary }}"
     user_data: "{{ aws_ec2_os_user_data[item.0.os] }}"
     vpc_subnet_id: "{{ aws_subnet_id }}"
-    wait: true
+    wait: no
   async: 300
+  changed_when: false
   loop_control:
-    label: "{{ item.0.name + item.1 + '.' + aws_ec2_domain }}"
+    label: "{{ item.0.name + item.1 }}"
   poll: 0
   register: ec2_async_create
   with_subelements:
     - "{{ aws_ec2_formatted }}"
     - suffix_list
 
-- name: wait for new ec2 instances to start
+- name: wait for starting/creating
   async_status:
     jid: "{{ item.ansible_job_id }}"
-  register: ec2
-  until: ec2.finished
-  retries: 300
+  loop: "{{ ec2_async_create.results }}"
   loop_control:
     label: "{{ item.item[0].name }}{{ item.item[1] + '.' + aws_ec2_domain }}"
-  with_items: "{{ ec2_async_create.results }}"
+  register: ec2
+  retries: 300
+  until: ec2.finished
