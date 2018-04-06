@@ -7,12 +7,10 @@
       install_recommends: no
       state: present
     with_items:
-      - python-pip
-      - python-setuptools
-      - python-wheel
+      - python3-pip
 
   - name: install docker-py using pip
     pip:
-      name: docker-py
+      name: docker
 
   become: true
