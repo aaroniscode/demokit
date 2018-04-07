@@ -10,5 +10,5 @@
     value: "{{ hostvars[item].ec2_ip_address }}"
     zone: "{{ aws_route53_domain }}"
   loop_control:
-    label: "{{ item }}"
+    label: "{{ item }}:{{ hostvars[item].ec2_ip_address }}"
   with_items: "{{ groups['ec2'] }}"
