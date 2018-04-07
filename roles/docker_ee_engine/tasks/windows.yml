@@ -1,0 +1,11 @@
+---
+- name: install the DockerMsftProvider module
+  win_psmodule:
+    name: DockerMsftProvider
+
+- name: install Docker EE
+  win_dsc:
+    ensure: present
+    name: Docker
+    ProviderName: DockerMsftProvider
+    resource_name: PackageManagement
