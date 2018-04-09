@@ -1,4 +1,5 @@
 ---
+ucp_namespace: "{{ 'docker' if not ucp_test else 'dockereng' }}"
 ucp_version: latest
 ucp_worker_required_vars:
   - ucp_worker_ucp_manager_group

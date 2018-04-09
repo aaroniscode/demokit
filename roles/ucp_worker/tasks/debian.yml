@@ -1,0 +1,14 @@
+---
+- name: test version requirements
+  include_tasks: test.yml
+  when: ucp_test
+
+- name: get command to join the swarm as a worker
+  shell: docker swarm join-token worker | grep token
+  changed_when: false
+  delegate_to: "{{ groups[ucp_worker_ucp_manager_group] | first }}"
+  register: join_command
+  run_once: true
+
+- name: add node to the cluster
+  command: "{{ join_command.stdout | trim }}"

@@ -5,25 +5,17 @@
   when: item not in vars
   with_items: "{{ ucp_worker_required_vars }}"
 
-- name: check if already joined a swarm
-  shell: docker info | awk '/^Swarm/ { print $2 }'
+- name: check swarm status on Linux
+  shell: docker info -f {% raw %}'{{ .Swarm.LocalNodeState }}'{% endraw %}
   register: swarm_status
   changed_when: false
+  when: ansible_os_family == 'Debian'
 
-- block:
+- name: check swarm status on Windows
+  win_shell: docker info -f {% raw %}'{{ .Swarm.LocalNodeState }}'{% endraw %}
+  register: swarm_status
+  changed_when: false
+  when: ansible_os_family == 'Windows'
 
-  - name: test version requirements
-    include_tasks: test.yml
-    when: ucp_test
-
-  - name: get swarm join token
-    shell: docker swarm join-token worker | grep token
-    changed_when: false
-    delegate_to: "{{ groups[ucp_worker_ucp_manager_group] | first }}"
-    register: join_command
-    run_once: true
-
-  - name: add node to the cluster
-    command: "{{ join_command.stdout | trim }}"
-
-  when: swarm_status.stdout == "inactive"
+- include_tasks: "{{ ansible_os_family | lower }}.yml"
+  when: swarm_status.stdout | trim  == "inactive"

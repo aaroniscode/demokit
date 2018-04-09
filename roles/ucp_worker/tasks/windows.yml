@@ -1,0 +1,48 @@
+---
+- name: get list of UCP images for Windows
+  docker_container:
+    cleanup: true
+    command:
+      - images
+      - "--list"
+      - "--enable-windows"
+      - "{{ '--image-version dev:' if ucp_test else '' }}"
+    detach: false
+    image: "{{ ucp_namespace }}/ucp:{{ ucp_version }}"
+    name: ucp
+    tty: true
+  changed_when: false
+  delegate_to: "{{ groups[ucp_worker_ucp_manager_group] | first }}"
+  register: win_ucp_image_list
+  run_once: true
+
+- name: login when testing development versions
+  include_role:
+    name: docker_login
+  when: ucp_test
+
+- name: pull Windows UCP images
+  win_shell: docker image pull {{ item }}
+  changed_when: not pull_result.stdout is search('Image is up to date')
+  loop: "{{ win_ucp_image_list.ansible_facts.docker_container.Output.splitlines() }}"
+  register: pull_result
+
+- name: run the Windows node setup script
+  win_shell: >
+    $script = [ScriptBlock]::Create((
+    docker run --rm
+    {{ ucp_namespace }}/ucp-agent-win:{{ ucp_version }} windows-script
+    {{ '--image-version dev:' if ucp_test else '' }}
+    | Out-String
+    ));
+    Invoke-Command $script
+
+- name: get command to join the swarm as a worker
+  shell: docker swarm join-token worker | grep token
+  changed_when: false
+  delegate_to: "{{ groups[ucp_worker_ucp_manager_group] | first }}"
+  register: join_command
+  run_once: true
+
+- name: add node to the cluster
+  win_shell: "{{ join_command.stdout | trim }}"
