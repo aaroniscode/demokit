@@ -3,6 +3,6 @@ ucp_controller_port: 443
 ucp_license: '{}'
 ucp_namespace: "{{ 'docker' if not ucp_test else 'dockereng' }}"
 ucp_password: password
-ucp_san: ansible_default_ipv4.address
 ucp_test: false
+ucp_url: ansible_default_ipv4.address
 ucp_version: latest

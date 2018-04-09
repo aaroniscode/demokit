@@ -33,7 +33,7 @@
       - "--host-address {{ ansible_default_ipv4.address }}"
       - "--admin-password {{ ucp_password }}"
       - "--controller-port {{ ucp_controller_port }}"
-      - "--san {{ ucp_san }}"
+      - "--san {{ ucp_url | urlsplit('hostname') }}"
       - "--license {{ ucp_license }}"
       - "{{ '--image-version dev:' if ucp_test else '' }}"
     detach: false
