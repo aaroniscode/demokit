@@ -1,8 +1,4 @@
 ---
-- name: lookup AMIs for {{ aws_ec2_region }} region
-  include_role:
-    name: aws_ami
-
 - name: find subnet using tags
   ec2_vpc_subnet_facts:
     filters: "{{ aws_ec2_tags_formatted }}"
@@ -21,7 +17,6 @@
       {{ aws_ec2_formatted | default([]) +
         [
           item.value | combine({
-            'ami': aws_ami[item.value.os],
             'name': item.key,
             'suffix_list': lookup('sequence', item.value.count | string).split(','),
             'tag_dictionary': dict.fromkeys(
@@ -32,22 +27,28 @@
         ]
       }}
   loop_control:
-    label: "{{ item.key + ', ' + item.value.instance + ', ' + aws_ami[item.value.os] }}"
+    label: "{{ item.key + ', ' + item.value.instance + ', ' + item.value.os }}"
   with_dict: "{{ aws_ec2 }}"
   when:
-    - item.value.tags
-    - aws_ec2_limit_tag in item.value.tags or aws_ec2_limit_tag == aws_ec2_os_tag[item.value.os]
+    - aws_ec2_limit_tag is none or
+      item.value.tags is not defined or
+      aws_ec2_limit_tag in item.value.tags or aws_ec2_limit_tag == aws_ec2_os_tag[item.value.os]
+
+- import_role:
+    name: aws_ami
+  vars:
+    aws_ami_os_list: "{{ aws_ec2_formatted | map(attribute='os') | list | unique }}"
 
 - name: start/create ec2 instances if needed
   ec2_instance:
-    image_id: "{{ item.0.ami }}"
+    image_id: "{{ aws_ami_images[item.0.os].image_id }}"
     instance_type: "{{ item.0.instance }}"
     key_name: "{{ aws_ec2_key_name }}"
     name: "{{ item.0.name + item.1 + '.' + aws_ec2_domain }}"
     profile: "{{ aws_ec2_profile }}"
     region: "{{ aws_ec2_region }}"
     security_groups: "{{ item.0.security_groups }}"
-    state: started
+    state: running
     tags: "{{ item.0.tag_dictionary }}"
     user_data: "{{ aws_ec2_os_user_data[item.0.os] }}"
     vpc_subnet_id: "{{ aws_subnet_id }}"
@@ -59,7 +60,7 @@
   poll: 0
   register: ec2_async_create
   with_subelements:
-    - "{{ aws_ec2_formatted }}"
+    - "{{ aws_ec2_formatted | default([]) }}"
     - suffix_list
 
 - name: wait for starting/creating
