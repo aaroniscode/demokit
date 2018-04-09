@@ -3,10 +3,6 @@
 
 [ec2]
 
-#
-### Modify settings BELOW this line ###
-#
-
 # A boto configuration profile may be used to separate out credentials
 # see http://boto.readthedocs.org/en/latest/boto_config_tut.html
 boto_profile = default
@@ -15,10 +11,12 @@ boto_profile = default
 # E.g. 'us-east-1,us-west-1,us-west-2'
 regions = us-east-1,us-east-2
 
-# Retrieve instances of type t1.micro AND tag env=stage, as well as any instance
-# that are of type m3.large, regardless of env tag
-# instance_filters = instance-type=t1.micro&tag:env=stage,instance-type=m3.large
-instance_filters = tag:Owner=your_username&tag:Environment:demo
+# Instance filters can be used to control which instances are retrieved for
+# inventory. For the full list of possible filters, please read the EC2 API
+# docs: http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-DescribeInstances.html#query-DescribeInstances-filters
+# Filters are key/value pairs separated by '=', to list multiple filters use
+# a list separated by commas. To "AND" criteria together, use "&".
+instance_filters = tag:Environment:demokit&tag:Owner=your_username
 
 #
 # Modify settings ABOVE this line ###
@@ -40,9 +38,10 @@ vpc_destination_variable = ip_address
 # To exclude ElastiCache instances from the inventory, uncomment and set to False.
 elasticache = False
 
-# By default, only EC2 instances in the 'running' state are returned. Set
-# 'all_instances' to True to return all instances regardless of state.
-all_instances = False
+# By default, only EC2 instances in the 'running' state are returned. Specify
+# EC2 instance states to return as a comma-separated list. This
+# option is overridden when 'all_instances' is True.
+instance_states = pending, running
 
 # API calls to EC2 are slow. For this reason, we cache the results of an API
 # call. Set this to the path you want cache files to be written to. Two files
@@ -67,46 +66,9 @@ expand_csv_tags = False
 # configure which groups should be created.
 group_by_region = True
 group_by_availability_zone = True
-group_by_aws_account = False
 group_by_ami_id = True
 group_by_instance_type = True
-group_by_instance_state = False
 group_by_vpc_id = True
 group_by_security_group = True
 group_by_tag_keys = True
 group_by_tag_none = True
-
-# Instance filters can be used to control which instances are retrieved for
-# inventory. For the full list of possible filters, please read the EC2 API
-# docs: http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-DescribeInstances.html#query-DescribeInstances-filters
-# Filters are key/value pairs separated by '=', to list multiple filters use
-# a list separated by commas. To "AND" criteria together, use "&". Note that
-# the "AND" is not useful along with stack_filters and so such usage is not allowed.
-# See examples below.
-
-# If you want to apply multiple filters simultaneously, set stack_filters to
-# True. Default behaviour is to combine the results of all filters. Stacking
-# allows the use of multiple conditions to filter down, for example by
-# environment and type of host.
-stack_filters = False
-
-# Retrieve only instances with (key=value) env=staging tag
-# instance_filters = tag:env=staging
-
-# Retrieve only instances with role=webservers OR role=dbservers tag
-# instance_filters = tag:role=webservers,tag:role=dbservers
-
-# Retrieve only t1.micro instances OR instances with tag env=staging
-# instance_filters = instance-type=t1.micro,tag:env=staging
-
-# You can use wildcards in filter values also. Below will list instances which
-# tag Name value matches webservers1*
-# (ex. webservers15, webservers1a, webservers123 etc)
-# instance_filters = tag:Name=webservers1*
-
-# Retrieve only instances of type t1.micro that also have tag env=stage
-# instance_filters = instance-type=t1.micro&tag:env=stage
-
-# Retrieve instances of type t1.micro AND tag env=stage, as well as any instance
-# that are of type m3.large, regardless of env tag
-# instance_filters = instance-type=t1.micro&tag:env=stage,instance-type=m3.large
