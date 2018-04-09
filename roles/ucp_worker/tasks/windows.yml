@@ -16,6 +16,9 @@
   register: win_ucp_image_list
   run_once: true
 
+- set_fact:
+    ucp_worker_win_images: "{{ win_ucp_image_list.ansible_facts.docker_container.Output.splitlines() }}"
+
 - name: login when testing development versions
   include_role:
     name: docker_login
@@ -24,14 +27,14 @@
 - name: pull Windows UCP images
   win_shell: docker image pull {{ item }}
   changed_when: not pull_result.stdout is search('Image is up to date')
-  loop: "{{ win_ucp_image_list.ansible_facts.docker_container.Output.splitlines() }}"
+  loop: "{{ ucp_worker_win_images }}"
   register: pull_result
 
 - name: run the Windows node setup script
   win_shell: >
     $script = [ScriptBlock]::Create((
     docker run --rm
-    {{ ucp_namespace }}/ucp-agent-win:{{ ucp_version }} windows-script
+    {{ ucp_worker_win_images | select('search','ucp-agent-win') | list | first }} windows-script
     {{ '--image-version dev:' if ucp_test else '' }}
     | Out-String
     ));
