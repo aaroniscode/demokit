@@ -7,7 +7,7 @@
 
   - name: add Docker EE repository
     apt_repository:
-      repo: "deb [arch=amd64] {{ docker_ee_url }}/ubuntu xenial {{ docker_ee_engine_version }}"
+      repo: "deb [arch=amd64] {{ docker_ee_url }}/ubuntu xenial {{ docker_ee_engine_linux_channel }}"
       state: present
 
   - name: install Docker EE
