@@ -1,0 +1,7 @@
+---
+- win_domain_membership:
+    domain_admin_user: Administrator
+    domain_admin_password: notused
+    hostname: "{{ inventory_hostname_short }}"
+    state: workgroup
+    workgroup_name: WORKGROUP
