@@ -1,0 +1,9 @@
+---
+- name: find latest Ubuntu 16.04 LTS ami
+  ec2_ami_facts:
+    filters:
+      name: "ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-*"
+    owner: 099720109477
+    profile: "{{ aws_ami_profile }}"
+    region: "{{ aws_ami_region }}"
+  register: ami_result

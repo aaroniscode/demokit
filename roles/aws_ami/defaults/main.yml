@@ -1,3 +1,5 @@
 ---
+aws_ami_images: {}
+aws_ami_os_list: []
 aws_ami_profile: "{{ aws_profile }}"
 aws_ami_region: "{{ aws_region }}"

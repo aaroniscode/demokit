@@ -1,0 +1,9 @@
+---
+- name: find latest Windows Server 2016 ami
+  ec2_ami_facts:
+    filters:
+      name: "Windows_Server-2016-English-Full-Base-*"
+    owner: amazon
+    profile: "{{ aws_ami_profile }}"
+    region: "{{ aws_ami_region }}"
+  register: ami_result

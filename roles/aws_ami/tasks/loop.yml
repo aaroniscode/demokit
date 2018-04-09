@@ -1,0 +1,21 @@
+---
+- import_tasks: "{{ item }}.yml"
+
+- name: >
+    using
+    {{
+      (
+        ami_result.images
+        | sort(attribute='creation_date')
+        | last
+      )
+      ['image_id']
+    }}
+    for {{ item }}
+  set_fact:
+    aws_ami_images: >
+      {{
+        aws_ami_images | combine({
+          item: ami_result.images | sort(attribute='creation_date') | last
+        })
+      }}
