@@ -2,8 +2,6 @@
 - name: install Docker
   hosts: ec2
   roles:
-    - set_hostname
-    - docker_py
     - docker_ee_engine
   tags:
     - engine
@@ -17,7 +15,7 @@
   tags:
     - ucp
 
-- name: join nodes to the cluster
+- name: join worker nodes
   hosts: tag_worker_nodes
   roles:
     - role: ucp_worker
@@ -29,6 +27,6 @@
   hosts: tag_registry_nodes
   roles:
     - role: dtr
-      dtr_ucp_node: "{{ groups['tag_registry_nodes'] | first }}"
+      dtr_ucp_node: "{{ hostvars[groups['tag_registry_nodes'] | first].inventory_hostname_short }}"
   tags:
     - dtr
