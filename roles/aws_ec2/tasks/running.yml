@@ -31,6 +31,7 @@
   with_dict: "{{ aws_ec2 }}"
   when:
     - aws_ec2_limit_tag is none or
+      aws_ec2_limit_tag == '' or
       item.value.tags is not defined or
       aws_ec2_limit_tag in item.value.tags or aws_ec2_limit_tag == aws_ec2_os_tag[item.value.os]
 
