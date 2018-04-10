@@ -1,29 +1,29 @@
 ---
-- name: bring up ec2 instances
-  hosts: localhost
-  gather_facts: false
-  roles:
-    - aws_ec2
-  tags: ec2
-
-- name: refresh in-memory inventory
+- name: run ec2 instances, configure DNS, set hostnames
   hosts: localhost
   gather_facts: false
   tasks:
+    - name: run ec2 instances
+      import_role:
+        name: aws_ec2
+      vars:
+        aws_ec2_limit_tag: "{{ limit | default(None) }}"
+
     - meta: refresh_inventory
-  tags: ec2
 
-- name: assign dns
-  hosts: localhost
-  gather_facts: false
-  roles:
-    - aws_route53
-  tags: route53
+    - name: configure dns
+      import_role:
+        name: aws_route53
 
-- name: wait for instances to boot
-  hosts: ec2
+- name: wait for instances
+  hosts: "{{ 'tag_' + limit | default('ec2') }}"
   gather_facts: false
   tasks:
     - name: wait for SSH/WinRM
       wait_for_connection:
-  tags: wait
+
+- name: set hostname
+  hosts: "{{ 'tag_' + limit | default('ec2') }}"
+  tasks:
+    - import_role:
+        name: set_hostname
