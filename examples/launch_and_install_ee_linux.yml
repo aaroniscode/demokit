@@ -1,0 +1,8 @@
+---
+- import_playbook: ../aws/run_instances.yml
+  vars:
+    limit: ubuntu
+
+- import_playbook: ../examples/docker_ee.yml
+  vars:
+    limit: ubuntu
