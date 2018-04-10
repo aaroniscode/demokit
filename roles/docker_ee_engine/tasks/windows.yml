@@ -20,5 +20,5 @@
   register: service_result
 
 - name: reboot to complete the install if the service didn't start
-  win_shell: Restart-Computer -Force
+  win_reboot:
   when: service_result.state == 'stopped'
