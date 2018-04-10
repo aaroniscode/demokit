@@ -1,5 +1,6 @@
 ---
 - import_playbook: ../aws/run_instances.yml
+  tags: instances
   vars:
     limit: ubuntu
 
