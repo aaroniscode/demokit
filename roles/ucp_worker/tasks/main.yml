@@ -7,15 +7,17 @@
 
 - name: check swarm status on Linux
   shell: docker info -f {% raw %}'{{ .Swarm.LocalNodeState }}'{% endraw %}
-  register: swarm_status
+  register: swarm_status_linux
   changed_when: false
   when: ansible_os_family == 'Debian'
 
 - name: check swarm status on Windows
   win_shell: docker info -f {% raw %}'{{ .Swarm.LocalNodeState }}'{% endraw %}
-  register: swarm_status
+  register: swarm_status_windows
   changed_when: false
   when: ansible_os_family == 'Windows'
 
 - include_tasks: "{{ ansible_os_family | lower }}.yml"
-  when: swarm_status.stdout | trim  == "inactive"
+  when:
+    - (ansible_os_family == 'Debian' and swarm_status_linux.stdout == 'inactive') or
+      (ansible_os_family == 'Windows' and swarm_status_windows.stdout | trim == 'inactive')
