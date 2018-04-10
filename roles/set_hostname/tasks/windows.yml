@@ -5,3 +5,7 @@
     hostname: "{{ inventory_hostname_short }}"
     state: workgroup
     workgroup_name: WORKGROUP
+
+- name: reboot if requested
+  win_reboot:
+  when: set_hostname_reboot_windows
