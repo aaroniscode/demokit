@@ -9,7 +9,7 @@
 
 # Ansible will use this key file to SSH into hosts and configure
 # Must pair the aws_key_public_key_file below
-ansible_ssh_private_key_file: ~/.ssh/aws_ansible.pem
+ansible_ssh_private_key_file: ~/.ssh/id_rsa
 
 #
 ##
@@ -68,7 +68,7 @@ aws_ec2:
 aws_key_name: "{{ aws_tags.Owner }}"
 
 # AWS key pair can be created dynamically by public key that matches private key above
-aws_key_public_key_file: ~/.ssh/aws_ansible.pub
+aws_key_public_key_file: ~/.ssh/id_rsa.pub
 
 # Default AWS profile and region to use for all AWS resources
 aws_profile: default
@@ -128,7 +128,7 @@ aws_windows_admin_password: ChangeMePlease!
 
 # Ansible identifies a VPC uniquely using name/CIDR
 # Since VPC CIDRs can be duplicated, a unique name is required
-aws_vpc_name: "{{ aws_tags.Owner + '-' + aws_tags.Environment }}"
+aws_vpc_name: "{{ aws_tags.Owner + '-' + aws_tags.Project }}"
 
 #
 ##
