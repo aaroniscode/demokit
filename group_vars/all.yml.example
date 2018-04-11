@@ -120,7 +120,7 @@ aws_security_groups:
 # The same tags MUST be included in the ec2.ini dynamic inventory config file
 aws_tags:
   Owner: your_username
-  Environment: demokit
+  Project: demokit
 
 # After a Windows instance is launched, the Administrator password will be set to this
 # The password must meet default Windows complexity requirements or it will fail to set!
