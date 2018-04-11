@@ -24,15 +24,22 @@
     region: "{{ aws_ec2_region }}"
   register: find_ec2
 
-- name: fail if instances are pending/rebooting/stopping
+- name: fail if instances are changing state
   fail:
-    msg: "Please wait for your instances to finish launching, rebooting or stopping"
+    msg: "Please wait for your instances to finish launching, rebooting, shutting-down or stopping"
   when: >
-    find_ec2.instances | count and
+    find_ec2.instances | count
+    and
     (
       find_ec2.instances | selectattr('state.name', 'equalto', 'pending') | list +
       find_ec2.instances | selectattr('state.name', 'equalto', 'rebooting') | list +
       find_ec2.instances | selectattr('state.name', 'equalto', 'stopping') | list
     ) | count
+    or
+    (
+      aws_ec2_state == 'terminated'
+      and
+      find_ec2.instances | selectattr('state.name', 'equalto', 'shutting-down') | list | count
+    )
 
 - include_tasks: "{{ aws_ec2_state }}.yml"

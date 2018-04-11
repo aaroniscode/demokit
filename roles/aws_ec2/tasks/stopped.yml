@@ -5,7 +5,7 @@
     profile: "{{ aws_ec2_profile }}"
     region: "{{ aws_ec2_region }}"
     state: 'stopped'
-    wait: no
+    wait: "{{ aws_ec2_wait }}"
   loop: "{{ find_ec2.instances | selectattr('state.name', 'equalto', 'running') | list }}"
   loop_control:
     label: "{{ item.tags.Name }}"

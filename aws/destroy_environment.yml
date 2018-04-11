@@ -3,6 +3,10 @@
   hosts: localhost
   gather_facts: false
   roles:
+    - role: aws_ec2
+      aws_ec2_state: terminated
+      aws_ec2_wait: true
+
     - role: aws_key
       aws_key_state: absent
 

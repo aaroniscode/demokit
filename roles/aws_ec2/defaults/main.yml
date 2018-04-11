@@ -12,6 +12,7 @@ aws_ec2_profile: "{{ aws_profile }}"
 aws_ec2_region: "{{ aws_region }}"
 aws_ec2_state: running
 aws_ec2_tags: "{{ aws_tags }}"
+aws_ec2_wait: no
 aws_ec2_win_admin_password: "{{ aws_windows_admin_password }}"
 aws_ec2_win_user_data: |
   <powershell>
