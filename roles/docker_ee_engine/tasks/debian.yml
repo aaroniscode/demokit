@@ -10,6 +10,16 @@
       repo: "deb [arch=amd64] {{ docker_ee_url }}/ubuntu xenial {{ docker_ee_engine_linux_channel }}"
       state: present
 
+  - name: create /etc/docker directory
+    file:
+      path: /etc/docker
+      state: directory
+
+  - name: configure storage driver
+    template:
+      src: daemon.json.j2
+      dest: /etc/docker/daemon.json
+
   - name: install Docker EE
     apt:
       name: docker-ee
