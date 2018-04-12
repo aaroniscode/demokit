@@ -1,13 +1,21 @@
 ---
 - name: install Docker
-  hosts: tag_manager_nodes:tag_worker_nodes:&{{ 'tag_' + limit | default('ec2') }}
+  hosts: >-
+    tag_manager_nodes:tag_worker_nodes
+    {% if limit is defined -%}
+      {{ ':&tag_' + limit }}
+    {% endif -%}
   roles:
     - docker_ee_engine
   tags:
     - engine
 
 - name: install UCP
-  hosts: tag_manager_nodes[0]:&{{ 'tag_' + limit | default('ec2') }}
+  hosts: >-
+    tag_manager_nodes[0]
+    {% if limit is defined -%}
+      {{ ':&tag_' + limit }}
+    {% endif -%}
   roles:
     - role: ucp
       ucp_license: "{{ lookup('file', docker_ee_license_file) | to_json }}"
@@ -15,7 +23,11 @@
     - ucp
 
 - name: join worker nodes
-  hosts: tag_worker_nodes:&{{ 'tag_' + limit | default('ec2') }}
+  hosts: >-
+    tag_worker_nodes
+    {% if limit is defined -%}
+      {{ ':&tag_' + limit }}
+    {% endif -%}
   roles:
     - role: ucp_worker
       ucp_worker_ucp_manager_group: tag_manager_nodes
@@ -23,7 +35,11 @@
     - workers
 
 - name: install DTR
-  hosts: tag_registry_nodes:&{{ 'tag_' + limit | default('ec2') }}
+  hosts: >-
+    tag_registry_nodes
+    {% if limit is defined -%}
+      {{ ':&tag_' + limit }}
+    {% endif -%}
   roles:
     - role: dtr
       dtr_ucp_node: "{{ hostvars[groups['tag_registry_nodes'] | first].inventory_hostname_short }}"

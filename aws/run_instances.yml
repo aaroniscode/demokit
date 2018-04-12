@@ -16,14 +16,22 @@
         name: aws_route53
 
 - name: wait for instances
-  hosts: "{{ 'tag_' + limit | default('ec2') }}"
+  hosts: >-
+    ec2
+    {% if limit is defined -%}
+      {{ ':&tag_' + limit }}
+    {% endif -%}
   gather_facts: false
   tasks:
     - name: wait for SSH/WinRM
       wait_for_connection:
 
 - name: set hostname
-  hosts: "{{ 'tag_' + limit | default('ec2') }}"
+  hosts: >-
+    ec2
+    {% if limit is defined -%}
+      {{ ':&tag_' + limit }}
+    {% endif -%}
   tasks:
     - import_role:
         name: set_hostname
