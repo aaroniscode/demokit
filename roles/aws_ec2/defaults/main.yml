@@ -6,12 +6,21 @@ aws_ec2_os_tag:
   ubuntu_1604: ubuntu
   windows_server_2016: windows
 aws_ec2_os_user_data:
-    ubuntu_1604:
-    windows_server_2016: "{{ aws_ec2_win_user_data }}"
+  ubuntu_1604:
+  windows_server_2016: "{{ aws_ec2_win_user_data }}"
 aws_ec2_profile: "{{ aws_profile }}"
 aws_ec2_region: "{{ aws_region }}"
 aws_ec2_state: running
 aws_ec2_tags: "{{ aws_tags }}"
+aws_ec2_volumes:
+  ubuntu_1604:
+    - device_name: /dev/sda1
+      ebs:
+        volume_size: 10
+  windows_server_2016:
+    - device_name: /dev/sda1
+      ebs:
+        volume_size: 40
 aws_ec2_wait: no
 aws_ec2_win_admin_password: "{{ aws_windows_admin_password }}"
 aws_ec2_win_user_data: |

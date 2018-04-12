@@ -44,6 +44,10 @@ aws_ec2:
     tags:
       - registry_nodes
       - worker_nodes
+    volumes:
+      - device_name: /dev/sda1
+        ebs:
+          volume_size: 40
   linux:
     instance: t2.micro
     count: 3
@@ -138,19 +142,6 @@ aws_vpc_name: "{{ aws_tags.Owner + '-' + aws_tags.Project }}"
 ##
 #
 
-# Default is `password`
-#ucp_password: password
-
-# Default is `false`. Set to `true` to install a test version
-# If installing a test version, set ucp_version as well
-#ucp_test: true
-
-# Required: URL of the host or URL of the load balancer in front of UCP
-ucp_url: https://ucp1.{{ aws_route53_domain }}
-
-# Default is `latest`
-#ucp_version: 3.0.0
-
 # Default is `stable-17.06`
 #docker_ee_engine_linux_channel: test-17.06
 
@@ -178,3 +169,16 @@ dtr_url: https://dtr1.{{ aws_route53_domain }}
 
 # Default is `latest`
 #dtr_version: 2.5.0
+
+# Default is `password`
+#ucp_password: password
+
+# Default is `false`. Set to `true` to install a test version
+# If installing a test version, set ucp_version as well
+#ucp_test: true
+
+# Required: URL of the host or URL of the load balancer in front of UCP
+ucp_url: https://ucp1.{{ aws_route53_domain }}
+
+# Default is `latest`
+#ucp_version: 3.0.0
