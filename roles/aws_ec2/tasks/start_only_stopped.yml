@@ -1,0 +1,11 @@
+---
+- name: start only stopped ec2 instances
+  ec2_instance:
+    instance_ids: "{{ item.instance_id }}"
+    profile: "{{ aws_ec2_profile }}"
+    region: "{{ aws_ec2_region }}"
+    state: started
+    wait: "{{ aws_ec2_wait }}"
+  loop: "{{ find_ec2.instances | selectattr('state.name', 'equalto', 'stopped') | list }}"
+  loop_control:
+    label: "{{ item.tags.Name }}"

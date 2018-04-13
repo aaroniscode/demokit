@@ -1,0 +1,5 @@
+---
+- import_playbook: ../aws/run_instances.yml
+  vars:
+    aws_ec2_state: start_only_stopped
+    aws_ec2_wait: true
