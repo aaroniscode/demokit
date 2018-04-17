@@ -1,0 +1,5 @@
+---
+ucp_rbac_default_password: password
+ucp_rbac_default_search_ldap: false
+ucp_rbac_orgs: []
+ucp_rbac_users: []

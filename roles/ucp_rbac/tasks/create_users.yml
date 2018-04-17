@@ -1,0 +1,25 @@
+- name: create users
+  uri:
+    body:
+      fullName: "{{ item.fullName | default(omit) }}"
+      isActive: "{{ item.isActive | default(true) }}"
+      isAdmin: "{{ item.isAdmin | default(false) }}"
+      name: "{{ item.name | default(item) }}"
+      password: "{{ item.password | default(ucp_rbac_default_password) }}"
+      searchLDAP: "{{ item.searchLDAP | default(ucp_rbac_default_search_ldap) }}"
+    body_format: json
+    headers:
+      Authorization: Bearer {{ ucp_token }}
+    method: POST
+    status_code: 201
+    url: "{{ ucp_url }}/accounts"
+    validate_certs: false
+  changed_when: uri_result.status == 201
+  failed_when: >
+    uri_result.status != 201
+    and
+    'ACCOUNT_EXISTS' not in uri_result.json.errors | map(attribute='code') | list
+  loop: "{{ ucp_rbac_users }}"
+  loop_control:
+    label: "{{ item.name | default(item) }}"    
+  register: uri_result

@@ -1,0 +1,12 @@
+---
+- import_tasks: create_users.yml
+
+- import_tasks: create_orgs.yml
+
+- import_tasks: create_teams.yml
+
+- include_tasks: add_users_to_teams.yml
+  loop: "{{ ucp_rbac_orgs }}"
+  loop_control:
+    loop_var: org
+  when: org.teams is defined

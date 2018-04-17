@@ -1,0 +1,35 @@
+- name: query teams in {{ org.org }} org
+  uri:
+    body:
+    body_format: json
+    headers:
+      Authorization: Bearer {{ ucp_token }}
+    url: "{{ ucp_url }}/accounts/{{ org.org }}/teams/{{ item.team }}/members"
+    validate_certs: false
+  loop: "{{ org.teams }}"
+  loop_control:
+    label: "{{ item.team | default(item) }}"
+  register: team_membership
+  when: item.team is defined
+
+- name: add users to teams in {{ org.org }} org
+  uri:
+    body:
+    body_format: json
+    headers:
+      Authorization: Bearer {{ ucp_token }}
+    method: PUT
+    url: "{{ ucp_url }}/accounts/{{ org.org }}/teams/{{ item.0.team }}/members/{{ item.1 }}"
+    validate_certs: false
+  changed_when: >
+    item.1 not in team_membership.results
+      | selectattr('item.team', 'eq', item.0.team)
+      | map(attribute='json.members') | flatten | map(attribute='member.name') | list
+  loop: >
+    {{
+      q('subelements', org.teams | select('mapping') | list, 'users', { 'skip_missing': True })
+    }}
+  loop_control:
+    label: "{{ item.0.team + '->' + item.1 }}"
+  register: uri_result
+  when: item.0.team is defined

@@ -1,0 +1,21 @@
+- name: create organizations
+  uri:
+    body:
+      isOrg: true
+      name: "{{ item.org | default(item) }}"
+    body_format: json
+    headers:
+      Authorization: Bearer {{ ucp_token }}
+    method: POST
+    status_code: 201
+    url: "{{ ucp_url }}/accounts"
+    validate_certs: false
+  changed_when: uri_result.status == 201
+  failed_when: >
+    uri_result.status != 201
+    and
+    'ACCOUNT_EXISTS' not in uri_result.json.errors | map(attribute='code') | list
+  loop: "{{ ucp_rbac_orgs }}"
+  loop_control:
+    label: "{{ item.org | default (item) }}"
+  register: uri_result
