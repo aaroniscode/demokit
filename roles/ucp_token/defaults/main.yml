@@ -1,0 +1,5 @@
+---
+ucp_token_password: "{{ ucp_password | default('password') }}"
+ucp_token_required_vars:
+   - ucp_url
+ucp_token_validate_certs: false

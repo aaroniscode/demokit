@@ -1,0 +1,20 @@
+---
+- name: check required variables
+  fail:
+    msg: Variable {{ item }} is not defined
+  when: item not in vars
+  with_items: "{{ ucp_token_required_vars }}"
+
+- name: get an auth token
+  uri:
+    body:
+      username: admin
+      password: "{{ ucp_password }}"
+    body_format: json
+    method: POST
+    url: "{{ ucp_url }}/auth/login"
+    validate_certs: "{{ ucp_token_validate_certs }}"
+  register: uri_result
+
+- set_fact:
+    ucp_token: "{{ uri_result.json.auth_token }}"
