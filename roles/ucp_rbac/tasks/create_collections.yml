@@ -1,0 +1,28 @@
+- name: lookup id for path {{ col.path }}
+  uri:
+    body:
+    body_format: json
+    headers:
+      Authorization: Bearer {{ ucp_token }}
+    url: "{{ ucp_url }}/collections"
+    validate_certs: false
+  register: col_list
+
+- name: create collection {{ col.name }}
+  uri:
+    body:
+      name: "{{ col.name | default(item) }}"
+      parent_id: "{{ (col_list.json | selectattr('path', 'eq', col.path) | first).id }}"
+    body_format: json
+    headers:
+      Authorization: Bearer {{ ucp_token }}
+    method: POST
+    status_code: 201
+    url: "{{ ucp_url }}/collections"
+    validate_certs: false
+  changed_when: uri_result.status == 201
+  failed_when: >
+    uri_result.status != 201
+    and
+    uri_result.status != 409
+  register: uri_result

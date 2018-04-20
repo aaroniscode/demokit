@@ -1,7 +1,12 @@
 ---
-- import_tasks: create_users.yml
+- include_tasks: create_collections.yml
+  loop: "{{ ucp_rbac_collections }}"
+  loop_control:
+    loop_var: col
 
 - import_tasks: create_orgs.yml
+
+- import_tasks: create_users.yml
 
 - import_tasks: create_teams.yml
 
