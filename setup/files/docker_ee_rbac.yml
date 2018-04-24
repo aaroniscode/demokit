@@ -1,0 +1,42 @@
+ucp_rbac_collections:
+  - name: zone
+    path: /
+  - name: dev
+    path: /zone
+  - name: dotnet
+    path: /zone/dev
+  - name: java
+    path: /zone/dev
+  - name: qa
+    path: /zone
+  - name: prod
+    path: /zone
+
+ucp_rbac_orgs:
+  - dev
+  - prod
+  - org: docker-datacenter
+    teams:
+      - team: dotnet
+        users:
+          - aaron
+          - betty
+      - team: java
+        users:
+          - charlie
+          - david
+  - org: qa
+    teams:
+      - jenkins
+      - qa
+
+ucp_rbac_users:
+  - aaron
+  - betty
+  - charlie
+  - david
+  - fullName: John Smith
+    isAdmin: false
+    name: jsmith
+    password: password
+    searchLDAP: false

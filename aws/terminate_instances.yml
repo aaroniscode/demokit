@@ -8,3 +8,5 @@
       vars:
         aws_ec2_limit_tag: "{{ limit | default(None) }}"
         aws_ec2_state: terminated
+  vars_files:
+    - ../demos/settings/aws_ec2.yml

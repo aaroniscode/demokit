@@ -1,0 +1,35 @@
+# Security groups will be dynamically created and updated
+# Apply the groups to the aws_ec2 dictionary above
+aws_security_groups:
+  default:
+    rules:
+      - proto: all
+        group_name: default
+      - proto: tcp
+        ports:
+          - 443
+        cidr_ip: 0.0.0.0/0
+  k8s_api:
+    rules:
+      - proto: tcp
+        ports:
+          - 6443
+        cidr_ip: 0.0.0.0/0
+  rdp:
+    rules:
+      - proto: tcp
+        ports:
+          - 3389
+        cidr_ip: 0.0.0.0/0
+  ssh:
+    rules:
+      - proto: tcp
+        ports:
+          - 22
+        cidr_ip: 0.0.0.0/0
+  winrm:
+    rules:
+      - proto: tcp
+        ports:
+          - 5986
+        cidr_ip: 0.0.0.0/0

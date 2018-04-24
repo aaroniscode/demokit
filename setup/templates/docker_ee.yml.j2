@@ -1,0 +1,44 @@
+---
+# Default is `stable-17.06`
+#docker_ee_engine_linux_channel: test-17.06
+
+# Default is null, which results in latest stable
+# Can choose a channel or specific version
+#docker_ee_engine_windows_version: test
+
+# Required: File location is relative to location of docker_ee.yml playbook
+# Copy your license file to demos/licenses to use the default
+docker_ee_license_file: {{ setup_docker_ee_license }}
+
+# Default is `true`. Uncomment to skip the play that populates demo data
+#docker_ee_populate: false
+
+# Required: Must be a valid Docker EE URL with an active subscription
+docker_ee_url: {{ setup_docker_ee_url }}
+
+# Required If: ucp_test and/or dtr_test are set to `true`
+docker_login_username: {{ setup_docker_login_username }}
+docker_login_email: {{ setup_docker_login_email }}
+docker_login_password: {{ setup_docker_login_password }}
+
+# Default is `false`. Set to `true` to install a test version
+#dtr_test: true
+
+# Required: URL of the host or URL of the load balancer in front of DTR
+dtr_url: https://dtr1.{{ setup_aws_domain }}
+
+# Default is `latest`
+#dtr_version: 2.5.0
+
+# Default is `password`
+#ucp_password: password
+
+# Default is `false`. Set to `true` to install a test version
+# If installing a test version, set ucp_version as well
+#ucp_test: true
+
+# Required: URL of the host or URL of the load balancer in front of UCP
+ucp_url: https://ucp1.{{ setup_aws_domain }}
+
+# Default is `latest`
+#ucp_version: 3.0.0

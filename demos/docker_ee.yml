@@ -1,5 +1,5 @@
 ---
-- name: install Docker
+- name: install Docker engine
   hosts: >-
     tag_manager_nodes:tag_worker_nodes
     {% if limit is defined -%}
@@ -9,6 +9,8 @@
     - docker_ee_engine
   tags:
     - engine
+  vars_files:
+    - ../demos/settings/docker_ee.yml
 
 - name: install UCP
   hosts: >-
@@ -21,6 +23,8 @@
       ucp_license: "{{ lookup('file', docker_ee_license_file) | to_json }}"
   tags:
     - ucp
+  vars_files:
+    - ../demos/settings/docker_ee.yml
 
 - name: join worker nodes
   hosts: >-
@@ -33,6 +37,8 @@
       ucp_worker_ucp_manager_group: tag_manager_nodes
   tags:
     - workers
+  vars_files:
+    - ../demos/settings/docker_ee.yml
 
 - name: install DTR
   hosts: >-
@@ -45,3 +51,31 @@
       dtr_ucp_node: "{{ hostvars[groups['tag_registry_nodes'] | first].inventory_hostname_short }}"
   tags:
     - dtr
+  vars_files:
+    - ../demos/settings/docker_ee.yml
+
+# - name: configure UCP and DTR
+#   hosts: localhost
+#   gather_facts: false
+#   tasks:
+#     - import_role:
+#         name: ucp_config
+#     - import_role:
+#         name: dtr_config
+#   tags:
+#     - config
+#   vars_files:
+#     - ../demos/settings/docker_ee.yml
+
+- name: populate Docker EE with demo data
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - include_role:
+        name: ucp_rbac
+      when: docker_ee_populate | default(true)
+  tags:
+    - populate
+  vars_files:
+    - ../demos/settings/docker_ee.yml
+    - ../demos/settings/docker_ee_rbac.yml

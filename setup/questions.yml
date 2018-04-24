@@ -1,0 +1,108 @@
+---
+- hosts: localhost
+  vars_prompt:
+
+    - name: setup_aws_profile
+      private: no
+      prompt: |
+        demo-kit uses Amazon Web Services (AWS) to create demo environments and
+        launch and manage compute (ec2) instances. If you have multiple AWS accounts
+        you may want to use a named profile. Most users will have setup a `default`
+        profile and can use that.
+
+        AWS profile?
+      default: "default"
+
+    - name: "setup_aws_region"
+      private: no
+      prompt: |
+
+        demo-kit launches and manages compute (ec2) instances in a single AWS region.
+        You can always later change this setting and re-run the configure script to
+        change the region.
+
+        AWS region?
+      default: "us-east-1"
+
+    - name: "setup_aws_domain"
+      private: no
+      prompt: |
+
+        demo-kit uses AWS Route 53 to automatically assign DNS names to ec2 instances
+        when they are launched. This requires a Hosted Zone already setup in Route 53.
+        Please make sure you have a Hosted Zone configured before you launch instances.
+
+        Domain name?
+      default: example.com
+
+    - name: "setup_owner_tag"
+      private: no
+      prompt: |
+
+        demo-kit tags all AWS resources with `Owner` and `Project` tags to track
+        deployed resources. Unlike Terraform, Ansible is not stateful and needs a
+        dynamic way to keep track of resources. The `Project` tag defaults to `demokit`
+        and can be changed in the `answers.yml` file. The `Owner` tag can also be used
+        to track AWS usage and can assist with cost accounting. It is recommended to use
+        your AWS username.
+
+        Owner tag?
+      default: firstname.lastname
+
+    - name: "setup_ssh_private_key"
+      private: no
+      prompt: |
+
+        demo-kit uses SSH Public Key Authentication to manages Linux instances. This
+        requires a public/private keypair. AWS adds the public key to the `authorized_keys`
+        file on the linux instance. Ansible uses the private key to connect, manage and
+        configure the instance.
+
+        SSH Private key?
+      default: "~/.ssh/id_rsa"
+
+    - name: "setup_ssh_public_key"
+      private: no
+      prompt: |
+
+        SSH Public key?
+      default: "~/.ssh/id_rsa.pub"
+
+    - name: "setup_windows_password"
+      private: no
+      prompt: |
+
+        For Windows instances, demo-kit uses Amazon provided AMI's which generate random
+        Windows Administrator passwords on launch. demo-kit uses a powershell script at
+        launch to configure WinRM and change the Administrator password. It is critical
+        that you choose a password that meets Windows minimum complexity requirements.
+        If it doesn't, the password fail to change without any apparent error.
+
+        Windows Administrator Password?
+      default: ChangeMePlease!
+
+    - name: "setup_docker_ee_url"
+      private: no
+      prompt: |
+
+        For Windows instances, demo-kit uses Amazon provided AMI's which generate random
+        Windows Administrator passwords on launch. demo-kit uses a powershell script at
+        launch to configure WinRM and change the Administrator password. It is critical
+        that you choose a password that meets Windows minimum complexity requirements.
+        If it doesn't, the password fail to change without any apparent error.
+
+        Docker EE URL?
+      default: https://storebits.docker.com/ee/linux/sub-abcedf12-abcd-abcd-abcd-abcdef123456
+
+  tasks:
+
+    - name: write answers file
+      template:
+        src: templates/answers.yml.j2
+        dest: answers.yml
+
+    - debug:
+        msg: >
+          Please review your answers for accuracy in `setup/answers.yml`. There are a few
+          advanced settings availble as well. Then run `ansible-playbook setup/configure.yml`
+          to complete your configuration.

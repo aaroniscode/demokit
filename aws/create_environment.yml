@@ -6,3 +6,5 @@
     - role: aws_key
     - role: aws_vpc
     - role: aws_security_groups
+  vars_files:
+    - ../demos/settings/aws_security_groups.yml

@@ -1,0 +1,48 @@
+# Instances are dynamically created using playbooks in aws directory
+# Supported Operatings Systems (with tag that is automatically added)
+# - ubuntu_1604 (ubuntu)
+# - windows_server_2016 (windows)
+aws_ec2:
+  ucp:
+    count: 1
+    instance: t2.medium
+    os: ubuntu_1604
+    security_groups:
+      - default
+      - k8s_api
+      - ssh
+    tags:
+      - manager_nodes
+  dtr:
+    count: 1
+    instance: t2.medium
+    os: ubuntu_1604
+    security_groups:
+      - default
+      - ssh
+    tags:
+      - registry_nodes
+      - worker_nodes
+    volumes:
+      - device_name: /dev/sda1
+        ebs:
+          volume_size: 40
+  linux:
+    instance: t2.micro
+    count: 3
+    os: ubuntu_1604
+    security_groups:
+      - default
+      - ssh
+    tags:
+      - worker_nodes
+  windows:
+    instance: t2.medium
+    os: windows_server_2016
+    count: 2
+    security_groups:
+      - default
+      - rdp
+      - winrm
+    tags:
+      - worker_nodes

@@ -4,6 +4,6 @@
   vars:
     limit: ubuntu
 
-- import_playbook: ../examples/docker_ee.yml
+- import_playbook: docker_ee.yml
   vars:
     limit: ubuntu

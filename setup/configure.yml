@@ -1,0 +1,41 @@
+---
+- hosts: localhost
+  vars_files:
+    - answers.yml
+  tasks:
+
+    - name: ec2.ini -- ec2 dynamic inventory configuration file
+      template:
+        backup: yes
+        src: templates/ec2.ini.j2
+        dest: ../ec2.ini
+
+    - name: all.yml -- group variables across all inventory
+      template:
+        backup: yes
+        src: templates/all.yml.j2
+        dest: ../group_vars/all.yml
+
+    - name: aws_ec2.yml -- AWS EC2 instance settings
+      copy:
+        backup: yes
+        src: files/aws_ec2.yml
+        dest: ../demos/settings/aws_ec2.yml
+
+    - name: aws_security_groups.yml -- AWS Security Group settings
+      copy:
+        backup: yes
+        src: files/aws_security_groups.yml
+        dest: ../demos/settings/aws_security_groups.yml
+
+    - name: docker_ee.yml -- Docker EE settings
+      template:
+        backup: yes
+        src: templates/docker_ee.yml.j2
+        dest: ../demos/settings/docker_ee.yml
+
+    - name: docker_ee_rbac.yml -- Docker EE RBAC settings
+      template:
+        backup: yes
+        src: files/docker_ee_rbac.yml
+        dest: ../demos/settings/docker_ee_rbac.yml
