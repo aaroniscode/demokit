@@ -8,7 +8,7 @@ There are no tagged versions yet. The master branch will have breaking changes.
 
 demo-kit is built on top of Ansible and requires that you run the `ansible-playbook`
 command in the root directory. Ansible will search your current working directory
-for ansible.cfg and will also use the ec2.py dynamic inventory script.
+for `ansible.cfg` and will also use the `ec2.py` dynamic inventory script.
 
 First, setup your AWS environment by creating a VPC, key pair and security groups.
 
@@ -24,7 +24,7 @@ Next, launch your EC2 instances and install Docker EE.
 $ ansible-playbook demos/launch_and_install_ee_linux.yml
 ```
 
-If you would like Windows instances, demo-kit can run the Windows launch and install in parallel for maximum speed. Windows takes a lot longer to boot and install software, so it's best to have demo-kit automate them in parallel to avoid having the Linux instances wait for their Windows counterparts.
+If you would like Windows instances, demo-kit can run the Windows launch and install in parallel for maximum speed. Windows takes a lot longer to boot and install software, so it's best to have demo-kit automate them in parallel to avoid having the Linux instances wait for their Windows counterparts. Open a new terminal window and run:
 
 ```bash
 $ ansible-playbook demos/launch_and_install_ee_windows.yml
@@ -56,7 +56,7 @@ $ ansible-playbook aws/destroy_environment.yml
 
 ## Known Issues
 
-If you are running demo-kit on macOS High Sierra (10.13) and using Windows instances, there is an issue(http://sealiesoftware.com/blog/archive/2017/6/5/Objective-C_and_fork_in_macOS_1013.html) with Python that will cause it to crash.
+If you are running demo-kit on macOS High Sierra (10.13) and using Windows instances, there is an [issue](http://sealiesoftware.com/blog/archive/2017/6/5/Objective-C_and_fork_in_macOS_1013.html) with Python that will cause it to crash.
 
 To work around the issue:
 
@@ -140,7 +140,7 @@ $ brew install awscli
 Then run the `configure` command.
 
 ```bash
-$ awscli configure
+$ aws configure
 ```
 
 Test your configuration
@@ -151,12 +151,15 @@ $ aws ec2 describe-instances --output table
 
 #### SSH Keys
 
-Both private and public SSH keys are required to launch and manage Linux hosts. You can check for existing keys: `ls -al ~/.ssh`.
+Both private and public SSH keys are required to launch and manage Linux hosts. You can check for existing keys.
 
-The default private key is often named `id_rsa`.
-The default public key is often named `id_rsa.pub`.
+```bash
+$ ls -al ~/.ssh
+```
 
-You can follow the guide(https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/) hosted on Github to create keys if you don't already have them or if you want to use separate, dedicated keys.
+The default private key is `id_rsa` and the default public key is `id_rsa.pub`.
+
+You can follow the [guide](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/) hosted on Github to create keys if you don't already have them or if you want to use separate, dedicated keys.
 
 #### Python Library for WinRM
 
@@ -194,6 +197,6 @@ Run the configure playbook.
 $ ansible-playbook setup/configure.yml
 ```
 
-> Note: You can re-run the `setup/configure` playbook after making changes to the `setup/answers.yml` file, if for example, you wanted to change your AWS region. If an existing settings file is overwriten, demo-kit will create a date-stamped backup file.
+> Note: You can re-run the `setup/configure.yml` playbook after making changes to the `setup/answers.yml` file, if for example, you wanted to change your AWS region. If an existing settings file is overwriten, demo-kit will create a date-stamped backup file.
 
 Setup is complete. Visit the [Usage](#usage) section to launch your demo environment!
