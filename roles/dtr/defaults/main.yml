@@ -5,7 +5,5 @@ dtr_replica_https_port: 443
 dtr_required_vars:
   - dtr_ucp_node
   - dtr_url
-  - ucp_password
-  - ucp_url
 dtr_version: latest
 dtr_test: false

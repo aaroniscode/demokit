@@ -1,4 +1,5 @@
 ---
+ucp_api_limit: 100
 ucp_controller_port: 443
 ucp_license: '{}'
 ucp_namespace: "{{ 'docker' if not ucp_test else 'dockereng' }}"

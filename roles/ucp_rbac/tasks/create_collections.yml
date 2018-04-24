@@ -4,7 +4,7 @@
     body_format: json
     headers:
       Authorization: Bearer {{ ucp_token }}
-    url: "{{ ucp_url }}/collections"
+    url: "{{ ucp_url }}/collections?limit={{ ucp_api_limit }}"
     validate_certs: false
   register: col_list
 

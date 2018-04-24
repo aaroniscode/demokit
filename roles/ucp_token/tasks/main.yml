@@ -1,10 +1,4 @@
 ---
-- name: check required variables
-  fail:
-    msg: Variable {{ item }} is not defined
-  when: item not in vars
-  with_items: "{{ ucp_token_required_vars }}"
-
 - name: get an auth token
   uri:
     body:
