@@ -6,4 +6,5 @@
 
 - import_playbook: docker_ee.yml
   vars:
+    docker_ee_populate: false
     limit: windows
