@@ -1,3 +1,4 @@
+---
 ucp_rbac_collections:
   - name: zone
     path: /

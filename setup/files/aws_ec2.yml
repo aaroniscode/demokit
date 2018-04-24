@@ -1,3 +1,4 @@
+---
 # Instances are dynamically created using playbooks in aws directory
 # Supported Operatings Systems (with tag that is automatically added)
 # - ubuntu_1604 (ubuntu)

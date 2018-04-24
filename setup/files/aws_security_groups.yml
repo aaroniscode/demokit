@@ -1,5 +1,6 @@
-# Security groups will be dynamically created and updated
-# Apply the groups to the aws_ec2 dictionary above
+---
+# AWS security groups are dynamically created and updated by the
+# aws/create_environment.yml playbook.
 aws_security_groups:
   default:
     rules:
