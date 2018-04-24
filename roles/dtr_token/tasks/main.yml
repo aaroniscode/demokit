@@ -1,0 +1,22 @@
+---
+- name: check required variables
+  fail:
+    msg: Variable {{ item }} is not defined
+  when: item not in vars
+  with_items: "{{ dtr_token_required_vars }}"
+
+- name: get an auth token
+  uri:
+    body:
+      tokenLabel: demokit
+    body_format: json
+    force_basic_auth: yes
+    method: POST
+    url: "{{ dtr_url }}/api/v0/api_tokens"
+    user: admin
+    password: "{{ ucp_password }}"
+    validate_certs: false
+  register: uri_result
+
+- set_fact:
+    dtr_token: "{{ uri_result.json.token }}"
