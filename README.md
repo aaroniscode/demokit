@@ -1,8 +1,10 @@
+![GitHub release](https://img.shields.io/github/release/qubyte/rubidium.svg?style=plastic)
+
 # demo-kit
 
-This is demo-kit! Documentation is under construction.
+demo-kit quickly and easily creates fully configured demo environments in the cloud (AWS today). It will create a VPC, launch instances, configure security groups, install software, configure settings and populate with demo data. You can also easily shut down instances and restart them to minimize costs.
 
-There are no tagged versions yet. The master branch will have breaking changes.
+demo-kit is built on Ansible and the current demo focus is Docker Enterprise Edition.
 
 ## Usage
 
