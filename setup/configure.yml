@@ -5,17 +5,23 @@
     - answers.yml
   tasks:
 
-    - name: ec2.ini -- ec2 dynamic inventory configuration file
+    - name: ec2.py -- ec2 dynamic inventory script
+      template:
+        mode: a+x
+        src: files/ec2.py
+        dest: ../inventory/ec2.py
+
+    - name: ec2.ini -- ec2 dynamic inventory configuration
       template:
         backup: yes
         src: templates/ec2.ini.j2
-        dest: ../ec2.ini
+        dest: ../inventory/ec2.ini
 
     - name: all.yml -- group variables across all inventory
       template:
         backup: yes
         src: templates/all.yml.j2
-        dest: ../group_vars/all.yml
+        dest: ../inventory/group_vars/all.yml
 
     - name: aws_ec2.yml -- AWS EC2 instance settings
       copy:

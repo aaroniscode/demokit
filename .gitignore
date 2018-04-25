@@ -1,2 +1,3 @@
-ec2.ini
-group_vars/all.yml
+inventory/ec2.ini
+inventory/ec2.py
+inventory/group_vars/all.yml
