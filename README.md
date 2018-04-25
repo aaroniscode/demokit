@@ -56,6 +56,8 @@ $ ansible-playbook aws/destroy_environment.yml
 
 ## Known Issues
 
+1. Python on macOS High Sierra (10.13)
+
 If you are running demo-kit on macOS High Sierra (10.13) and using Windows instances, there is an [issue](http://sealiesoftware.com/blog/archive/2017/6/5/Objective-C_and_fork_in_macOS_1013.html) with Python that will cause it to crash.
 
 To work around the issue:
@@ -66,14 +68,18 @@ $ export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 
 You may want to add that to your `.bashrc` or `.zshrc`.
 
-The playbook `aws/run_instances` will launch new instances and start any stopped instances that are defined in the `demos/settings/aws_ec2.yml` config file. If any stopped instances are started, demo-kit won't wait for the EC2 instances to get IP addresses before continuing with the playbook and those instances won't be assigned DNS or picked up by the inventory refresh. You can either run the playbook again or choose the `aws/start_only_stopped_instances.yml` which will pause and wait for public IP addresses to be assigned before continuing.
+2. Restarting stopped EC2 instances
+
+EC2 assigns public IP addresses differently when launching new instances vs starting previously stopped instances. When launching, public IP addresses are assigned immediately. When starting, EC2 assigns IP addresses after the instance state changes. The `aws/run_instances` playbook doesn't wait for EC2 instances to change state due to an issue in Ansible 2.5.0 where it waits not just for the state change, but for the status checks. This can take 2-5 minutes.
+
+The playbook `aws/run_instances` will both launch new instances and start any stopped instances that are defined in the `demos/settings/aws_ec2.yml` config file. If any stopped instances are started, demo-kit won't wait for the EC2 instances to get IP addresses before continuing with the playbook and those instances won't be assigned DNS or picked up by the inventory refresh. You can either run the playbook again or choose the `aws/start_only_stopped_instances.yml` which will pause and wait for public IP addresses to be assigned before continuing.
 
 ## Installation
 
 demo-kit requires the following items to be installed and/or configured.
 
-1. [Python 2.7](#python-2.7)
-2. [Ansible 2.5.0](#ansible-2.5.0)
+1. [Python 2.7](#python-27)
+2. [Ansible 2.5.0](#ansible-250)
 3. [AWS SDK for Python](#aws-sdk-for-python)
 4. [AWS Configuration and Credentials](#aws-configuration-and-credentials)
 5. [SSH Keys](#ssh-keys)
@@ -84,11 +90,12 @@ demo-kit requires the following items to be installed and/or configured.
 
 #### Python 2.7
 
-On MacOS, you can use [Homebrew](https://brew.sh). To install Homebrew:
+On macOS, you can use [Homebrew](https://brew.sh). To install Homebrew:
 
 ```bash
 $ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 ```
+
 You can install Python with Homebrew. Python 2.7.14 has been tested.
 
 > Note: There are issues with Python 3 and demo-kit. Initial testing found incompatibilities
@@ -138,7 +145,7 @@ region=us-west-2
 output=json
 ```
 
-The easiest way to setup these files is to use the AWS CLI. On MacOS you can install the AWS CLI with Homebrew:
+The easiest way to setup these files is to use the AWS CLI. On macOS you can install the AWS CLI with Homebrew:
 
 ```bash
 $ brew install awscli
