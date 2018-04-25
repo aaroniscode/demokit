@@ -74,7 +74,7 @@ demo-kit requires the following items to be installed and/or configured.
 
 1. [Python 3](#python-3)
 2. [Ansible 2.5.0](#ansible-2.5.0)
-3. [AWS SDK for Python](#aws-sdk-for-python-(boto3))
+3. [AWS SDK for Python](#aws-sdk-for-python)
 4. [AWS Configuration and Credentials](#aws-configuration-and-credentials)
 5. [SSH Keys](#ssh-keys)
 6. [Python Library for WinRM](#python-library-for-winrm)
@@ -89,28 +89,34 @@ On MacOS, you can use [Homebrew](https://brew.sh). To install Homebrew:
 ```bash
 $ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 ```
-Then use Homebrew to install Python 3.
+You can install Python 3 with Homebrew. Python 3.6.5 has been tested.
 
 ```bash
 $ brew install python
 ```
 
+> Homebrew installs pip from Python 3 as [`pip3`](https://docs.brew.sh/Homebrew-and-Python). If you installed python using a different method or are running on Linux you may have to use `pip`.
+
 #### Ansible 2.5.0
 
-Ansible version 2.5.0 or greater is required. At this time version 2.5.0 has been tested.
+Ansible version 2.5.0 is required. Install Ansible using `pip`.
+
+> There are bugs in Ansible 2.5.1. You must install Ansible version 2.5.0.
+
 ```bash
 $ pip3 install ansible==2.5.0
 ```
+
 > Note: If Ansible is installed by Homebrew it will break the ec2.py dynamic inventory script.
 > https://github.com/ansible/ansible/issues/30497
 > https://github.com/Homebrew/brew/issues/3167
 
-#### AWS SDK for Python (Boto3)
+#### AWS SDK for Python
 
-Homebrew installs pip from Python 3 as [`pip3`](https://docs.brew.sh/Homebrew-and-Python). If you installed python using a different method or are running on Linux you may have to use `pip`.
+Ansible uses Boto, the AWS SDK for Python. Both `boto` and `boto3` versions of the library are required.
 
 ```bash
-$ pip3 install boto3
+$ pip3 install boto boto3
 ```
 
 #### AWS Configuration and Credentials
