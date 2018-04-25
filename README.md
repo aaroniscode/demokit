@@ -1,4 +1,4 @@
-![GitHub release](https://img.shields.io/github/release/qubyte/rubidium.svg?style=plastic)
+![GitHub release](https://img.shields.io/github/release/gitamiller/demo-kit.svg?style=plastic)
 
 # demo-kit
 
