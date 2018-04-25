@@ -171,9 +171,13 @@ Both private and public SSH keys are required to launch and manage Linux hosts. 
 $ ls -al ~/.ssh
 ```
 
-The default private key is `id_rsa` and the default public key is `id_rsa.pub`.
+The default private key is `id_rsa` and the default public key is `id_rsa.pub`. If you need to generate keys you run `ssh-keygen`.
 
-You can follow the [guide](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/) hosted on Github to create keys if you don't already have them or if you want to use separate, dedicated keys.
+```bash
+$ ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+```
+
+For more info review the [guide](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/) on Github.
 
 #### Python Library for WinRM
 
