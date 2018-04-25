@@ -72,7 +72,7 @@ You may want to add that to your `.bashrc` or `.zshrc`.
 
 EC2 assigns public IP addresses differently when launching new instances vs starting previously stopped instances. When launching, public IP addresses are assigned immediately. When starting, EC2 assigns IP addresses after the instance state changes. The `aws/run_instances` playbook doesn't wait for EC2 instances to change state due to an issue in Ansible 2.5.0 where it waits not just for the state change, but for the status checks. This can take 2-5 minutes.
 
-The playbook `aws/run_instances` will both launch new instances and start any stopped instances that are defined in the `demos/settings/aws_ec2.yml` config file. If any stopped instances are started, demo-kit won't wait for the EC2 instances to get IP addresses before continuing with the playbook and those instances won't be assigned DNS or picked up by the inventory refresh. You can either run the playbook again or choose the `aws/start_only_stopped_instances.yml` which will pause and wait for public IP addresses to be assigned before continuing.
+The playbook `aws/run_instances` will both launch new instances and start any stopped instances that are defined in the `demos/settings/aws_ec2.yml` config file. If any stopped instances are started, demo-kit won't wait for the EC2 instances to get IP addresses before continuing with the playbook and those instances won't be assigned DNS or picked up by the inventory refresh. You can either run the playbook again or choose the `aws/start_only_stopped_instances.yml` playbook which will pause and wait for public IP addresses to be assigned before continuing.
 
 ## Installation
 
