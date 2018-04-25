@@ -72,7 +72,7 @@ The playbook `aws/run_instances` will launch new instances and start any stopped
 
 demo-kit requires the following items to be installed and/or configured.
 
-1. [Python 3](#python-3)
+1. [Python 2.7](#python-2.7)
 2. [Ansible 2.5.0](#ansible-2.5.0)
 3. [AWS SDK for Python](#aws-sdk-for-python)
 4. [AWS Configuration and Credentials](#aws-configuration-and-credentials)
@@ -82,20 +82,21 @@ demo-kit requires the following items to be installed and/or configured.
 
 **Important: Ansible must be installed using `pip`. Don't use `brew`.**
 
-#### Python 3
+#### Python 2.7
 
 On MacOS, you can use [Homebrew](https://brew.sh). To install Homebrew:
 
 ```bash
 $ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 ```
-You can install Python 3 with Homebrew. Python 3.6.5 has been tested.
+You can install Python with Homebrew. Python 2.7.14 has been tested.
+
+> Note: There are issues with Python 3 and demo-kit. Initial testing found incompatibilities
+with the `async_status` Ansible module.
 
 ```bash
-$ brew install python
+$ brew install python@2
 ```
-
-> Homebrew installs pip from Python 3 as [`pip3`](https://docs.brew.sh/Homebrew-and-Python). If you installed python using a different method or are running on Linux you may have to use `pip`.
 
 #### Ansible 2.5.0
 
@@ -104,7 +105,7 @@ Ansible version 2.5.0 is required. Install Ansible using `pip`.
 > There are bugs in Ansible 2.5.1. You must install Ansible version 2.5.0.
 
 ```bash
-$ pip3 install ansible==2.5.0
+$ pip install ansible==2.5.0
 ```
 
 > Note: If Ansible is installed by Homebrew it will break the ec2.py dynamic inventory script.
@@ -116,7 +117,7 @@ $ pip3 install ansible==2.5.0
 Ansible uses Boto, the AWS SDK for Python. Both `boto` and `boto3` versions of the library are required.
 
 ```bash
-$ pip3 install boto boto3
+$ pip install boto boto3
 ```
 
 #### AWS Configuration and Credentials
@@ -172,7 +173,7 @@ You can follow the [guide](https://help.github.com/articles/generating-a-new-ssh
 This library is only required if you want to launch and configure Windows instances.
 
 ```bash
-$ pip3 install pywinrm
+$ pip install pywinrm
 ```
 
 #### Clone the demo-kit Repository
