@@ -7,7 +7,7 @@
         )
       }}
   loop_control:
-    label: "{{ item.key }}"
+    label: "{{ item.key + ':' + item.value }}"
   with_dict: "{{ aws_tags }}"
 
 - name: find unique VPC using tags
