@@ -1,5 +1,6 @@
 ---
 - hosts: localhost
+  gather_facts: false
   vars_prompt:
 
     - name: setup_aws_profile
@@ -10,10 +11,13 @@
         you may want to use a named profile. Most users will have setup a `default`
         profile and can use that.
 
-        AWS profile?
-      default: "default"
+        NOTE: For all the questions, you can press ENTER to accept the suggested
+        answer in the brackets like [default] below.
 
-    - name: "setup_aws_region"
+        AWS profile?
+      default: default
+
+    - name: setup_aws_region
       private: no
       prompt: |
 
@@ -24,7 +28,7 @@
         AWS region?
       default: "us-east-1"
 
-    - name: "setup_aws_domain"
+    - name: setup_aws_domain
       private: no
       prompt: |
 
@@ -35,7 +39,7 @@
         Domain name?
       default: example.com
 
-    - name: "setup_owner_tag"
+    - name: setup_owner_tag
       private: no
       prompt: |
 
@@ -49,7 +53,7 @@
         Owner tag?
       default: firstname.lastname
 
-    - name: "setup_ssh_private_key"
+    - name: setup_ssh_private_key
       private: no
       prompt: |
 
@@ -59,16 +63,16 @@
         configure the instance.
 
         SSH Private key?
-      default: "~/.ssh/id_rsa"
+      default: ~/.ssh/id_rsa
 
-    - name: "setup_ssh_public_key"
+    - name: setup_ssh_public_key
       private: no
       prompt: |
 
         SSH Public key?
-      default: "~/.ssh/id_rsa.pub"
+      default: ~/.ssh/id_rsa.pub
 
-    - name: "setup_windows_password"
+    - name: setup_windows_password
       private: no
       prompt: |
 
@@ -81,15 +85,13 @@
         Windows Administrator Password?
       default: ChangeMePlease!
 
-    - name: "setup_docker_ee_url"
+    - name: setup_docker_ee_url
       private: no
       prompt: |
 
-        For Windows instances, demo-kit uses Amazon provided AMI's which generate random
-        Windows Administrator passwords on launch. demo-kit uses a powershell script at
-        launch to configure WinRM and change the Administrator password. It is critical
-        that you choose a password that meets Windows minimum complexity requirements.
-        If it doesn't, the password fail to change without any apparent error.
+        demo-kit will install Docker EE and requires a valid Docker EE subscription URL.
+        The sample URL below is not valid. If you would like a trial subscription, you
+        can request one at: https://store.docker.com/editions/enterprise/docker-ee-trial
 
         Docker EE URL?
       default: https://storebits.docker.com/ee/linux/sub-abcedf12-abcd-abcd-abcd-abcdef123456
@@ -98,6 +100,7 @@
 
     - name: write answers file
       template:
+        backup: yes
         src: templates/answers.yml.j2
         dest: answers.yml
 
