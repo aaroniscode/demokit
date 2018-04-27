@@ -41,8 +41,8 @@
         src: templates/docker_ee.yml.j2
         dest: ../demos/settings/docker_ee.yml
 
-    - name: docker_ee_rbac.yml -- Docker EE RBAC settings
+    - name: ucp_rbac.yml -- UCP RBAC settings
       template:
         backup: yes
-        src: files/docker_ee_rbac.yml
-        dest: ../demos/settings/docker_ee_rbac.yml
+        src: files/ucp_rbac.yml
+        dest: ../demos/settings/ucp_rbac.yml

@@ -78,4 +78,4 @@
     - populate
   vars_files:
     - ../demos/settings/docker_ee.yml
-    - ../demos/settings/docker_ee_rbac.yml
+    - ../demos/settings/ucp_rbac.yml
