@@ -17,5 +17,5 @@
     'ACCOUNT_EXISTS' not in uri_result.json.errors | map(attribute='code') | list
   loop: "{{ ucp_rbac_orgs }}"
   loop_control:
-    label: "{{ item.org | default (item) }}"
+    label: "{{ item.org | default(item) }}"
   register: uri_result
