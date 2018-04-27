@@ -1,0 +1,12 @@
+---
+- name: populate repositories
+  docker_image:
+    name: "{{ item.1.src }}"
+    repository: "{{ dtr_url | urlsplit('netloc') }}/{{ item.1.dst }}"
+    push: yes
+  loop: >
+    {{
+      q('subelements', dtr_repos | select('mapping') | list, 'images', { 'skip_missing':True })
+    }}
+  loop_control:
+    label: "{{ item.1.src + '->' + item.1.dst | default(item.1) }}"

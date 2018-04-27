@@ -1,0 +1,26 @@
+---
+- name: create repositories
+  uri:
+    body:
+      immutableTags: "{{ item.immutable | default(omit) }}"
+      name: "{{ (item.name | default(item)).split('/')[1] }}"
+      scanOnPush: "{{ item.scan_on_push | default(omit) }}"
+      shortDescription: "{{ item.description | default(omit) }}"
+      visibility: "{{ item.visibility | default('public') }}"
+    body_format: json
+    force_basic_auth: yes
+    method: POST
+    status_code: 201
+    url: "{{ dtr_url }}/api/v0/repositories/{{ (item.name | default(item)).split('/')[0] }}"
+    user: admin
+    password: "{{ dtr_token }}"
+    validate_certs: false
+  changed_when: uri_result.status == 201
+  failed_when: >
+      uri_result.status != 201
+      and
+      'REPOSITORY_EXISTS' not in uri_result.json.errors | map(attribute='code') | list
+  loop: "{{ dtr_repos }}"
+  loop_control:
+    label: "{{ item.name | default(item) }}"
+  register: uri_result
