@@ -1,0 +1,12 @@
+---
+- name: check required variables
+  fail:
+    msg: Variable {{ item }} is not defined
+  when: item not in vars
+  with_items: "{{ dtr_login_required_vars }}"
+
+- name: login to {{ dtr_url }}
+  docker_login:
+    username: "{{ dtr_login_username }}"
+    password: "{{ dtr_login_password }}"
+    registry: "{{ dtr_url }}"
