@@ -21,9 +21,6 @@ docker_ee_populate: true
 # Default is `latest`
 #dtr_version: 2.5.0
 
-# Default is `password`
-#ucp_password: password
-
 # Default is `false`. Set to `true` to install a test version
 # If installing a test version, set ucp_version as well
 #ucp_test: true

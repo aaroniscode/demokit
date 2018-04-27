@@ -80,7 +80,7 @@
         Windows Administrator passwords on launch. demo-kit uses a powershell script at
         launch to configure WinRM and change the Administrator password. It is critical
         that you choose a password that meets Windows minimum complexity requirements.
-        If it doesn't, the password fail to change without any apparent error.
+        If it doesn't, the password change will fail without an error message.
 
         Windows Administrator Password?
       default: ChangeMePlease!
@@ -96,7 +96,7 @@
         Docker EE URL?
       default: https://storebits.docker.com/ee/linux/sub-abcedf12-abcd-abcd-abcd-abcdef123456
 
-    - name: docker_ee_license_file
+    - name: setup_docker_ee_license
       private: no
       prompt: |
 
@@ -108,13 +108,24 @@
         Path to Docker EE license?
       default: ~/Downloads/docker_subscription.lic
 
+    - name: setup_ucp_password
+      private: no
+      prompt: |
+
+        demo-kit will install and configure Universal Control Plane (UCP). Since it will
+        be accessible on the public Internet, it is a good idea to change the default
+        admin password.
+
+        UCP admin password?
+      default: containyourself
+
   tasks:
 
     - name: copy Docker EE license file
       copy:
-        src: "{{ docker_ee_license_file }}"
+        src: "{{ setup_docker_ee_license }}"
         dest: ../demos/licenses/docker_subscription.lic
-      when: docker_ee_license_file | lower != 'skip'
+      when: setup_docker_ee_license | lower != 'skip'
 
     - name: write answers file
       template:
