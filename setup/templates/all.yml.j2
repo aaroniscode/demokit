@@ -33,3 +33,7 @@ aws_windows_admin_password: {{ setup_windows_password }}
 # Ansible identifies a VPC uniquely using name/CIDR
 # Since VPC CIDRs can be duplicated, a unique name is required
 aws_vpc_name: {{ setup_aws_vpc_name }}
+
+# Path to Docker EE license file
+# Note: Location is relative to demos/install_docker_ee.yml playbook
+docker_ee_license_file: licenses/docker_subscription.lic

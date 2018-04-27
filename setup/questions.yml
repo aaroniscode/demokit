@@ -96,7 +96,25 @@
         Docker EE URL?
       default: https://storebits.docker.com/ee/linux/sub-abcedf12-abcd-abcd-abcd-abcdef123456
 
+    - name: docker_ee_license_file
+      private: no
+      prompt: |
+
+        Docker EE requires a valid license file. If you provide a path to your license file,
+        demo-kit will copy it to the demos/licenses directory.
+
+        If you would like to skip this step, enter `skip` below.
+
+        Path to Docker EE license?
+      default: ~/Downloads/docker_subscription.lic
+
   tasks:
+
+    - name: copy Docker EE license file
+      copy:
+        src: "{{ docker_ee_license_file }}"
+        dest: ../demos/licenses/docker_subscription.lic
+      when: docker_ee_license_file | lower != 'skip'
 
     - name: write answers file
       template:
