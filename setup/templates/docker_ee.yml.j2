@@ -12,10 +12,11 @@ docker_ee_populate: true
 # Required: Must be a valid Docker EE URL with an active subscription
 docker_ee_url: {{ setup_docker_ee_url }}
 
-# Required If: ucp_test and/or dtr_test are set to `true`
-docker_login_username: {{ setup_docker_login_username }}
-docker_login_email: {{ setup_docker_login_email }}
-docker_login_password: {{ setup_docker_login_password }}
+# Required only when either ucp_test or dtr_test is set to `true`
+# Test versions accessible by Docker employees and must be logged into Docker Hub
+docker_login_username: docker_hub_username
+docker_login_email: first.last@docker.com
+docker_login_password: docker_hub_password
 
 # Default is `false`. Set to `true` to install a test version
 #dtr_test: true
