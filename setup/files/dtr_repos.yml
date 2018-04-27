@@ -1,0 +1,30 @@
+---
+# Populate DTR with demo data. Repositories will be created and images tagged
+# and pushed.
+# Requires organizations to already exist. Define in demos/settings/ucp_rbac.yml
+dtr_repos:
+  - name: base/alpine
+    description: ops approved base image
+    images:
+      - src: alpine:3.6
+        dst: base/alpine:3.6
+      - src: alpine:3.7
+        dst: base/alpine:3.7
+  - name: base/nginx
+    description: ops approved base image
+    images:
+      - src: nginx:1.13-alpine
+        dst: base/nginx:1.13-alpine
+      - src: nginx:1.12-alpine
+        dst: base/nginx:1.13-alpine
+  - name: dev/nginx-hello-world
+    images:
+      - src: dockeramiller/nginx-hello-world
+        dst: dev/nginx-hello-world
+  - name: prod/flask-demo
+    images:
+      - src: dockeramiller/flask-demo
+        dst: prod/flask-demo
+    immutable: false
+    scan_on_push: false
+    visibility: public

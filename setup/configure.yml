@@ -46,3 +46,9 @@
         backup: yes
         src: files/ucp_rbac.yml
         dest: ../demos/settings/ucp_rbac.yml
+
+    - name: dtr_repos.yml -- DTR repositories settings
+      template:
+        backup: yes
+        src: files/dtr_repos.yml
+        dest: ../demos/settings/dtr_repos.yml
