@@ -41,7 +41,7 @@ $ ansible-playbook aws/stop_instances.yml
 Your demo environment won't break and can be restarted very quickly.
 
 ```bash
-$ ansible-playbook aws/start_only_stopped.yml
+$ ansible-playbook aws/start_only_stopped_instances.yml
 ```
 
 If you'd like to terminate your instances and start over:
