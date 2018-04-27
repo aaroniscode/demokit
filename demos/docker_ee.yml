@@ -67,15 +67,30 @@
 #   vars_files:
 #     - ../demos/settings/docker_ee.yml
 
-- name: populate Docker EE with demo data
+- name: populate UCP with demo data
   hosts: localhost
   gather_facts: false
   tasks:
     - include_role:
         name: ucp_rbac
-      when: docker_ee_populate | default(true)
+      when: docker_ee_populate
   tags:
     - populate
+    - populate_ucp
   vars_files:
     - ../demos/settings/docker_ee.yml
-    - ../demos/settings/ucp_rbac.yml
+    - ../demos/settings/docker_ee_rbac.yml
+
+- name: populate DTR with demo data
+  hosts: tag_registry_nodes[0]
+  gather_facts: false
+  tasks:
+    - include_role:
+        name: dtr_repos
+      when: docker_ee_populate
+  tags:
+    - populate
+    - populate_dtr
+  vars_files:
+    - ../demos/settings/docker_ee.yml
+    - ../demos/settings/dtr_repos.yml

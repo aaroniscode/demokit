@@ -10,8 +10,8 @@
 # Copy your license file to demos/licenses to use the default
 docker_ee_license_file: {{ setup_docker_ee_license }}
 
-# Default is `true`. Uncomment to skip the play that populates demo data
-#docker_ee_populate: false
+# Set to false and no demo data will be populated after intallation
+docker_ee_populate: true
 
 # Required: Must be a valid Docker EE URL with an active subscription
 docker_ee_url: {{ setup_docker_ee_url }}
