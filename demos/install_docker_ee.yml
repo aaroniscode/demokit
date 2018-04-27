@@ -79,7 +79,7 @@
     - populate_ucp
   vars_files:
     - ../demos/settings/docker_ee.yml
-    - ../demos/settings/docker_ee_rbac.yml
+    - ../demos/settings/ucp_rbac.yml
 
 - name: populate DTR with demo data
   hosts: tag_registry_nodes[0]

@@ -21,12 +21,12 @@ ucp_rbac_orgs:
     teams:
       - team: dotnet
         users:
-          - aaron
           - betty
+          - charlie
       - team: java
         users:
-          - charlie
           - david
+          - eric
   - org: qa
     teams:
       - jenkins

@@ -16,7 +16,7 @@ dtr_repos:
       - src: nginx:1.13-alpine
         dst: base/nginx:1.13-alpine
       - src: nginx:1.12-alpine
-        dst: base/nginx:1.13-alpine
+        dst: base/nginx:1.12-alpine
   - name: dev/nginx-hello-world
     images:
       - src: dockeramiller/nginx-hello-world
