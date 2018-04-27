@@ -9,20 +9,14 @@
 # Set to false and no demo data will be populated after intallation
 docker_ee_populate: true
 
-# Required: Must be a valid Docker EE URL with an active subscription
-docker_ee_url: {{ setup_docker_ee_url }}
-
 # Required only when either ucp_test or dtr_test is set to `true`
 # Test versions accessible by Docker employees and must be logged into Docker Hub
-docker_login_username: docker_hub_username
-docker_login_email: first.last@docker.com
-docker_login_password: docker_hub_password
+#docker_login_username: docker_hub_username
+#docker_login_email: first.last@docker.com
+#docker_login_password: docker_hub_password
 
 # Default is `false`. Set to `true` to install a test version
 #dtr_test: true
-
-# Required: URL of the host or URL of the load balancer in front of DTR
-dtr_url: https://dtr1.{{ setup_aws_domain }}
 
 # Default is `latest`
 #dtr_version: 2.5.0
@@ -33,9 +27,6 @@ dtr_url: https://dtr1.{{ setup_aws_domain }}
 # Default is `false`. Set to `true` to install a test version
 # If installing a test version, set ucp_version as well
 #ucp_test: true
-
-# Required: URL of the host or URL of the load balancer in front of UCP
-ucp_url: https://ucp1.{{ setup_aws_domain }}
 
 # Default is `latest`
 #ucp_version: 3.0.0

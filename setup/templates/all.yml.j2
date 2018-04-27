@@ -37,3 +37,12 @@ aws_vpc_name: {{ setup_aws_vpc_name }}
 # Path to Docker EE license file
 # Note: Location is relative to demos/install_docker_ee.yml playbook
 docker_ee_license_file: licenses/docker_subscription.lic
+
+# Docker EE URL with an active subscription
+docker_ee_url: {{ setup_docker_ee_url }}
+
+# URL of the host or URL of the load balancer in front of DTR
+dtr_url: https://dtr1.{{ setup_aws_domain }}
+
+# URL of the host or URL of the load balancer in front of UCP
+ucp_url: https://ucp1.{{ setup_aws_domain }}
