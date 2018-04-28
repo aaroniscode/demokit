@@ -42,7 +42,7 @@
 
 - name: install DTR
   hosts: >-
-    tag_registry_nodes
+    tag_registry_nodes[0]
     {% if limit is defined -%}
       {{ ':&tag_' + limit }}
     {% endif -%}
@@ -73,7 +73,7 @@
   tasks:
     - include_role:
         name: ucp_rbac
-      when: docker_ee_populate
+      when: docker_ee_populate and limit != 'windows'
   tags:
     - populate
     - populate_ucp
@@ -82,7 +82,11 @@
     - ../demos/settings/ucp_rbac.yml
 
 - name: populate DTR with demo data
-  hosts: tag_registry_nodes[0]
+  hosts: >-
+    tag_registry_nodes[0]
+    {% if limit is defined -%}
+      {{ ':&tag_' + limit }}
+    {% endif -%}
   gather_facts: false
   tasks:
     - include_role:
