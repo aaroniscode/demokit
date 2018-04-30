@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## v0.3.0 - 2018-04-30
+## [v0.3.0] - 2018-04-30
 ### Added
 - Populate DTR repositories (create repos, push tagged images)
 - Add a couple demo applications (compose files)
