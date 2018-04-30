@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## v0.3.0 - 2018-04-30
 ### Added
 - Populate DTR repositories (create repos, push tagged images)
 - Add a couple demo applications (compose files)
@@ -24,3 +26,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Customize volumes for ec2 instances
 
 [Unreleased]: https://github.com/gitamiller/demo-kit/compare/master...devel
+[v0.3.0]: https://github.com/gitamiller/demo-kit/compare/v0.2.0...v0.3.0
