@@ -13,7 +13,7 @@
 
     - name: configure dns
       import_role:
-        name: aws_route53
+        name: aws_route53_records
   vars_files:
     - ../demos/settings/aws_ec2.yml
 

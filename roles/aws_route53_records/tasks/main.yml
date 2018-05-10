@@ -1,0 +1,6 @@
+---
+- include_tasks: "{{ aws_route53_records_state }}.yml"
+  when: >
+    'ec2' in groups
+    or
+    aws_route53_records_state == 'all_records_absent'

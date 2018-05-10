@@ -10,8 +10,8 @@
     - role: aws_key
       aws_key_state: absent
 
-    - role: aws_route53
-      aws_route53_state: all_records_absent
+    - role: aws_route53_records
+      aws_route53_records_state: all_records_absent
 
     - role: aws_security_groups
       aws_security_groups_state: absent

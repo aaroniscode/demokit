@@ -3,6 +3,5 @@ aws_route53_required_vars:
   - aws_route53_domain
 aws_route53_profile: "{{ aws_profile }}"
 aws_route53_region: "{{ aws_region }}"
-aws_route53_state: present
 aws_route53_tags: "{{ aws_tags }}"
 aws_route53_ttl: 60
