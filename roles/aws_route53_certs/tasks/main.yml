@@ -1,0 +1,78 @@
+---
+- name: generate letsencrypt account key
+  openssl_privatekey:
+    path: ../demos/certs/letsencrypt_account.pem
+    size: 4096
+
+- name: generate certificate private keys
+  openssl_privatekey:
+    path: ../demos/certs/{{ item }}.{{ aws_route53_domain }}.key
+    size: 4096
+  loop: "{{ aws_certs }}"
+
+- name: generate certificate signing requests
+  openssl_csr:
+    path: ../demos/certs/{{ item }}.{{ aws_route53_domain }}.csr
+    privatekey_path: ../demos/certs/{{ item }}.{{ aws_route53_domain }}.key
+    common_name: "{{ item }}.{{ aws_route53_domain }}"
+  loop: "{{ aws_certs }}"
+
+- name: initiate letsencrypt challenge
+  letsencrypt:
+    account_key: ../demos/certs/letsencrypt_account.pem
+    acme_directory: https://acme-v01.api.letsencrypt.org/directory
+    challenge: dns-01
+    cert: ../demos/certs/{{ item }}.{{ aws_route53_domain }}.crt
+    csr: ../demos/certs/{{ item }}.{{ aws_route53_domain }}.csr
+  loop: "{{ aws_certs }}"
+  register: le_challenge
+
+- name: create TXT records to satisfy challenge
+  route53:
+    overwrite: yes
+    profile: "{{ aws_route53_profile }}"
+    record: >-
+      {{
+        item.challenge_data[item.item + '.' + aws_route53_domain]['dns-01'].record
+      }}
+    state: present
+    type: TXT
+    ttl: "{{ aws_route53_ttl }}"
+    value: >-
+      {{
+        '"' + item.challenge_data[item.item + '.' + aws_route53_domain]['dns-01'].resource_value + '"'
+      }}
+    wait: true
+    zone: "{{ aws_route53_domain }}"
+  async: 300
+  loop: "{{ le_challenge.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  poll: 0
+  register: route53_async
+  when: item is changed
+
+- name: wait for route53 records to replicate
+  async_status:
+    jid: "{{ item.ansible_job_id }}"
+  loop: "{{ route53_async.results }}"
+  loop_control:
+    label: "{{ item.item.item }}"
+  register: route53
+  retries: 300
+  until: route53.finished
+  when: item is changed
+
+- name: validate the challenge and retrieve the certs
+  letsencrypt:
+    account_key: ../demos/certs/letsencrypt_account.pem
+    acme_directory: https://acme-v01.api.letsencrypt.org/directory
+    challenge: dns-01
+    cert: ../demos/certs/{{ item.item + '.' + aws_route53_domain }}.crt
+    chain: ../demos/certs/{{ item.item + '.' + aws_route53_domain }}-intermediate.crt
+    csr: ../demos/certs/{{ item.item + '.' + aws_route53_domain }}.csr
+    data: "{{ item }}"
+  loop: "{{ le_challenge.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  when: item is changed
