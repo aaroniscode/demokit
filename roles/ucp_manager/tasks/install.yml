@@ -17,7 +17,6 @@
     detach: false
     image: "{{ ucp_namespace }}/ucp:{{ ucp_version }}"
     name: ucp
-    tty: true
   changed_when: false
   register: ucp_image_list
 
@@ -25,6 +24,9 @@
   docker_image:
     name: "{{ item }}"
   with_items: "{{ ucp_image_list.ansible_facts.docker_container.Output.splitlines() }}"
+
+- import_tasks: ucp_certs.yml
+  when: ucp_certs
 
 - name: install UCP
   docker_container:
@@ -35,6 +37,7 @@
       - "--controller-port {{ ucp_controller_port }}"
       - "--san {{ ucp_url | urlsplit('hostname') }}"
       - "--license {{ ucp_license }}"
+      - "{{ '--external-server-cert' if ucp_certs else '' }}"
       - "{{ '--image-version dev:' if ucp_test else '' }}"
     detach: false
     name: ucp

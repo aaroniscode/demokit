@@ -1,0 +1,34 @@
+---
+- name: create ucp-controller-server-certs volume
+  docker_volume:
+    name: ucp-controller-server-certs
+
+- name: copy private key to {{ ucp_url | urlsplit('hostname') }}
+  copy:
+    src: ../../../demos/certs/{{ ucp_url | urlsplit('hostname') }}.key
+    dest: /home/ubuntu/{{ ucp_url | urlsplit('hostname') }}.key
+
+- name: copy certificate to {{ ucp_url | urlsplit('hostname') }}
+  copy:
+    src: ../../../demos/certs/{{ ucp_url | urlsplit('hostname') }}.crt
+    dest: /home/ubuntu/{{ ucp_url | urlsplit('hostname') }}.crt
+
+- name: copy intermediate certificate to {{ ucp_url | urlsplit('hostname') }}
+  copy:
+    src: ../../../demos/certs/{{ ucp_url | urlsplit('hostname') }}-intermediate.crt
+    dest: /home/ubuntu/{{ ucp_url | urlsplit('hostname') }}-intermediate.crt
+
+- name: copy certificates and key into ucp-controller-server-certs volume
+  docker_container:
+    cleanup: true
+    command:
+      - sh -c "
+        cp /src/{{ ucp_url | urlsplit('hostname') }}.key /dst/key.pem &&
+        cp /src/{{ ucp_url | urlsplit('hostname') }}.crt /dst/cert.pem &&
+        cp /src/{{ ucp_url | urlsplit('hostname') }}-intermediate.crt /dst/ca.pem"
+    detach: false
+    name: copy_certs
+    image: alpine
+    volumes:
+      - /home/ubuntu:/src
+      - ucp-controller-server-certs:/dst

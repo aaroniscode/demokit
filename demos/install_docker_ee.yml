@@ -20,6 +20,7 @@
     {% endif -%}
   roles:
     - role: ucp_manager
+      ucp_certs: true
       ucp_license: "{{ lookup('file', docker_ee_license_file) | to_json }}"
   tags:
     - ucp
