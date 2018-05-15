@@ -1,4 +1,5 @@
 ---
+dtr_certs: false
 dtr_namespace: "{{ 'docker' if not dtr_test else 'dockerhubenterprise' }}"
 dtr_replica_http_port: 80
 dtr_replica_https_port: 443

@@ -35,6 +35,9 @@
       - "--ucp-url {{ ucp_url }}"
       - "--ucp-username admin"
       - "--ucp-password {{ ucp_password }}"
+      - "{{ '--dtr-ca ' + dtr_ca if dtr_ca else '' }}"
+      - "{{ '--dtr-cert ' + dtr_cert if dtr_cert else '' }}"
+      - "{{ '--dtr-key ' + dtr_key if dtr_key else '' }}"
     detach: false
     name: dtr
     image: "{{ dtr_namespace }}/dtr:{{ dtr_version }}"

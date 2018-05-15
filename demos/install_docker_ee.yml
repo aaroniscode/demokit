@@ -49,6 +49,9 @@
     {% endif -%}
   roles:
     - role: dtr
+      dtr_ca: '"{{ lookup("file", "certs/" + inventory_hostname + "/ca.pem") }}"'
+      dtr_cert: '"{{ lookup("file", "certs/" + inventory_hostname + "/cert.pem") }}"'
+      dtr_key: '"{{ lookup("file", "certs/" + inventory_hostname + "/key.pem") }}"'
       dtr_ucp_node: "{{ hostvars[groups['tag_registry_nodes'] | first].inventory_hostname_short }}"
   tags:
     - dtr
