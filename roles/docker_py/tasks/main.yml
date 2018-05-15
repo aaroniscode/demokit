@@ -13,5 +13,6 @@
   - name: install docker-py using pip
     pip:
       name: docker
+      version: 3.3.0
 
   become: true
