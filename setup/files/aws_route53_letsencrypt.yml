@@ -1,0 +1,4 @@
+---
+aws_route53_letsencrypt:
+  - ucp1
+  - dtr1

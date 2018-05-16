@@ -35,6 +35,12 @@
         src: files/aws_security_groups.yml
         dest: ../demos/settings/aws_security_groups.yml
 
+    - name: aws_route53_letsencrypt.yml -- Let's Encrypt settings
+      copy:
+        backup: yes
+        src: files/aws_route53_letsencrypt.yml
+        dest: ../demos/settings/aws_route53_letsencrypt.yml
+
     - name: docker_ee.yml -- Docker EE settings
       copy:
         backup: yes
