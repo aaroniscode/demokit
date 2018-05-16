@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Automatically create and renew certificates with Let's Encrypt using DNS-01 challenge
+- Install UCP with certificate
+- Install DTR with certificate
+
+### Changed
+- docker_py is pinned to a version (3.3.0) to avoid breaking changes
+- aws/destroy_environment.yml terminates instances in parallel for increased speed
 
 ## [v0.3.0] - 2018-04-30
 ### Added
