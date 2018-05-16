@@ -6,6 +6,7 @@
     region: "{{ aws_ec2_region }}"
     state: 'absent'
     wait: "{{ aws_ec2_wait }}"
+  async: 300
   loop: >
     {{
       find_ec2.instances | selectattr('state.name', 'equalto', 'running') | list
@@ -13,3 +14,15 @@
     }}
   loop_control:
     label: "{{ item.tags.Name }}"
+  poll: 0
+  register: ec2_async_terminate
+
+- name: wait for {{ aws_ec2_wait | ternary('terminatation', 'API call') }} to complete
+  async_status:
+    jid: "{{ item.ansible_job_id }}"
+  loop: "{{ ec2_async_terminate.results }}"
+  loop_control:
+    label: "{{ item.item.tags.Name }}"
+  register: ec2
+  retries: 300
+  until: ec2.finished
