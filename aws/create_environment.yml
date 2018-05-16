@@ -6,7 +6,7 @@
     - role: aws_key
     - role: aws_vpc
     - role: aws_security_groups
-    - role: aws_route53_certs
+    - role: aws_route53_letsencrypt
   vars_files:
-    - ../demos/settings/aws_route53_certs.yml
+    - ../demos/settings/aws_route53_letsencrypt.yml
     - ../demos/settings/aws_security_groups.yml
