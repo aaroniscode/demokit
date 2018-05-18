@@ -86,7 +86,8 @@ demo-kit requires the following items to be installed and/or configured.
 4. [AWS Configuration and Credentials](#aws-configuration-and-credentials)
 5. [SSH Keys](#ssh-keys)
 6. [Python Library for WinRM](#python-library-for-winrm)
-7. [Clone the demo-kit Repository](#clone-the-demo-kit-repository)
+7. [Python OpenSSL Library](#python-openssl-library)
+8. [Clone the demo-kit Repository](#clone-the-demo-kit-repository)
 
 **Important: Ansible must be installed using `pip`. Don't use `brew`.**
 
@@ -187,6 +188,14 @@ This library is only required if you want to launch and configure Windows instan
 
 ```bash
 $ pip install pywinrm
+```
+
+#### Python OpenSSL Library
+
+This library is used to create certficates
+
+```bash
+$ pip install pyopenssl
 ```
 
 #### Clone the demo-kit Repository
