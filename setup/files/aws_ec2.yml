@@ -2,6 +2,7 @@
 # Instances are dynamically created using playbooks in aws directory
 # Supported Operatings Systems (with tag that is automatically added)
 # - ubuntu_1604 (ubuntu)
+# - ubuntu_1804 (ubuntu)
 # - windows_server_2016 (windows)
 aws_ec2:
   ucp:
