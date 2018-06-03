@@ -1,0 +1,104 @@
+---
+- import_playbook: ../aws/run_instances.yml
+  tags: instances
+  vars:
+    limit: k8s
+
+- name: install Docker
+  hosts: tag_k8s
+  roles:
+    - docker_ce_engine
+  tags: engine
+
+- name: install kubeadm
+  hosts: tag_k8s
+  tasks:
+    - name: add Google's GPG key
+      apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
+      become: true
+
+    - name: add Kubernetes repository
+      apt_repository:
+        repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+        state: present
+      become: true
+
+    - name: install kubelet, kubeadm and kubectl
+      apt:
+        name: "{{ ['kubelet', 'kubeadm', 'kubectl'] }}"
+        state: present
+        cache_valid_time: 3600
+      become: true
+  tags: kubeadm
+
+- name: k8s master
+  hosts: tag_k8s:&tag_master
+  tasks:
+    - name: kubeadm init
+      command: kubeadm init --pod-network-cidr=192.168.0.0/16
+      args:
+        creates: /etc/kubernetes/admin.conf
+      become: true
+      register: kubeadm_init
+
+    - name: create ~/.kube directory
+      file:
+        path: ~/.kube
+        state: directory
+
+    - name: copy default kube config
+      copy:
+        dest: "{{ ansible_env.HOME }}/.kube/config"
+        group: "{{ ansible_env.USER }}"
+        owner: "{{ ansible_env.USER }}"
+        remote_src: yes
+        src: /etc/kubernetes/admin.conf
+      become: true
+
+    - name: create /opt/calico directory
+      file:
+        mode: 0755
+        path: /opt/calico
+        state: directory
+      become: true
+
+    - name: Download Calico RBAC manifest
+      get_url:
+        url: https://docs.projectcalico.org/v3.1/getting-started/kubernetes/installation/hosted/rbac-kdd.yaml
+        dest: /opt/calico/rbac-kdd.yaml
+      become: true
+
+    - name: Download Calico install manifest
+      get_url:
+        url: https://docs.projectcalico.org/v3.1/getting-started/kubernetes/installation/hosted/kubernetes-datastore/calico-networking/1.7/calico.yaml
+        dest: /opt/calico/install.yaml
+      become: true
+
+    - name: deploy Calico RBAC manifest
+      command: kubectl apply -f /opt/calico/rbac-kdd.yaml
+      register: kubectl_apply
+      changed_when: "'created' in kubectl_apply.stdout"
+
+    - name: deploy Calico install manifest
+      command: kubectl apply -f /opt/calico/install.yaml
+      register: kubectl_apply
+      changed_when: "'created' in kubectl_apply.stdout"
+  tags: master
+
+- name: k8s nodes
+  hosts: tag_k8s:&tag_node
+  tasks:
+    - name: get join token
+      become: true
+      command: kubeadm token create --print-join-command --ttl 5m
+      changed_when: false
+      delegate_to: "{{ groups['tag_k8s'] | intersect(groups['tag_master']) | first }}"
+      register: join_command
+      run_once: true
+
+    - name: join node to the cluster
+      become: true
+      command: "{{ join_command.stdout | trim }}"
+  tags: workers
