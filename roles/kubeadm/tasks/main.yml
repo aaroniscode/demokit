@@ -1,0 +1,25 @@
+---
+- block:
+  - name: add Google's GPG key
+    apt_key:
+      url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+      state: present
+
+  - name: add Kubernetes repository
+    apt_repository:
+      repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+      state: present
+
+  - name: install kubeadm, kubectl and kubelet
+    apt:
+      name: 
+        - kubectl={{ k8s_version }}
+        - kubelet={{ k8s_version }}
+        - kubeadm={{ k8s_version }}
+      state: present
+      cache_valid_time: 3600
+
+  become: true
+
+- name: configure kubectl bash completion
+  shell: echo "source <(kubectl completion bash)" >> ~/.bashrc

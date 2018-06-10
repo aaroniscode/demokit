@@ -1,0 +1,6 @@
+---
+# Latest patch release of major versions require a *
+# Examples include: 1.9.* or 1.10.*
+# Or choose a specific patch release: 1.10.3
+k8s_pod_cidr: 192.168.0.0/16
+k8s_version: '*'
