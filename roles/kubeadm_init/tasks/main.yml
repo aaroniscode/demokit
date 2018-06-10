@@ -1,0 +1,31 @@
+---
+- block:
+
+  - name: kubeadm init
+    command: kubeadm init --pod-network-cidr={{ k8s_pod_cidr }}
+    args:
+      creates: /etc/kubernetes/admin.conf
+    register: kubeadm_init
+
+  - name: save 'kubeadm init' log to /var/log/kubeadm_init.log
+    copy: 
+      content: "{{ kubeadm_init.stdout }}" 
+      dest: /var/log/kubeadm_init.log
+
+  - name: add read permissions to /etc/kubernetes/admin.conf
+    file:
+      path: /etc/kubernetes/admin.conf
+      mode: "o=r"
+
+  become: true
+
+- name: create ~/.kube directory
+  file:
+    path: ~/.kube
+    state: directory
+
+- name: copy default kube config
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: ~/.kube/config
+    remote_src: yes
