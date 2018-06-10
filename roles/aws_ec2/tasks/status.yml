@@ -1,0 +1,14 @@
+---
+- name: running ec2 instances
+  add_host:
+    name: foo
+  loop: "{{ find_ec2.instances | selectattr('state.name', 'equalto', 'running') | list }}"
+  loop_control:
+    label: "{{ item.tags.Name }}"
+
+- name: stopped ec2 instances
+  add_host:
+    name: foo
+  loop: "{{ find_ec2.instances | selectattr('state.name', 'equalto', 'stopped') | list }}"
+  loop_control:
+    label: "{{ item.tags.Name }}"

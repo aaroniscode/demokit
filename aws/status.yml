@@ -1,0 +1,11 @@
+---
+- name: AWS status
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: status of ec2 instances
+      import_role:
+        name: aws_ec2
+      vars:
+        aws_ec2_limit_tag: "{{ limit | default(None) }}"
+        aws_ec2_state: status
