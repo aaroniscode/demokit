@@ -1,0 +1,30 @@
+---
+- block:
+
+  - name: create /opt/calico directory
+    file:
+      mode: 0755
+      path: /opt/calico
+      state: directory
+
+  - name: download Calico RBAC manifest
+    get_url:
+      url: https://docs.projectcalico.org/v{{ calico_version }}/getting-started/kubernetes/installation/hosted/rbac-kdd.yaml
+      dest: /opt/calico/rbac-kdd.yaml
+
+  - name: download Calico install manifest
+    get_url:
+      url: https://docs.projectcalico.org/v{{ calico_version }}/getting-started/kubernetes/installation/hosted/kubernetes-datastore/calico-networking/1.7/calico.yaml
+      dest: /opt/calico/install.yaml
+  
+  become: true
+
+- name: deploy Calico RBAC manifest
+  command: kubectl apply -f /opt/calico/rbac-kdd.yaml
+  register: kubectl_apply
+  changed_when: "'created' in kubectl_apply.stdout"
+
+- name: deploy Calico install manifest
+  command: kubectl apply -f /opt/calico/install.yaml
+  register: kubectl_apply
+  changed_when: "'created' in kubectl_apply.stdout"
