@@ -5,7 +5,11 @@
     profile: "{{ aws_ec2_profile }}"
     region: "{{ aws_ec2_region }}"
   register: find_subnet_result
-  failed_when: find_subnet_result.subnets | count != 1
+
+- name: fail if subnet not found
+  fail:
+    msg: "Run 'aws/configure' to before running ec2 instances"
+  when: find_subnet_result.subnets | count != 1
 
 - name: using {{ find_subnet_result.subnets[0].id }}
   set_fact:
