@@ -1,0 +1,13 @@
+---
+- import_playbook: /demokit/aws/run.yml
+  tags: instances
+  vars:
+    limit: 
+      - ee
+      - ubuntu
+
+- import_playbook: /demokit/ee/docker_ee.yml
+  vars:
+    limit: 
+      - ee
+      - ubuntu
