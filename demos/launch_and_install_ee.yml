@@ -1,5 +1,0 @@
----
-- import_playbook: ../aws/run_instances.yml
-  tags: instances
-
-- import_playbook: install_docker_ee.yml
