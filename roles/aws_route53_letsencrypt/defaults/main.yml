@@ -1,2 +1,3 @@
 ---
 aws_certs_domain: "{{ aws_route53_domain | default(omit) }}"
+aws_certs_path: /bind/certs

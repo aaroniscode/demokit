@@ -1,7 +1,7 @@
 ---
 - name: generate letsencrypt account key
   openssl_privatekey:
-    path: ../demos/certs/letsencrypt_account.pem
+    path: "{{ aws_certs_path }}/letsencrypt_account.pem"
     size: 4096
 
 - name: generate certificate list
@@ -17,30 +17,30 @@
 
 - name: create certificate directories
   file:
-    path: ../demos/certs/{{ item }}
+    path: "{{ aws_certs_path }}/{{ item }}"
     state: directory
   loop: "{{ cert_list }}"
 
 - name: generate certificate private keys
   openssl_privatekey:
-    path: ../demos/certs/{{ item }}/key.pem
+    path: "{{ aws_certs_path }}/{{ item }}/key.pem"
     size: 4096
   loop: "{{ cert_list }}"
 
 - name: generate certificate signing requests
   openssl_csr:
-    path: ../demos/certs/{{ item }}.csr
-    privatekey_path: ../demos/certs/{{ item }}/key.pem
+    path: "{{ aws_certs_path }}/{{ item }}.csr"
+    privatekey_path: "{{ aws_certs_path }}/{{ item }}/key.pem"
     common_name: "{{ item }}"
   loop: "{{ cert_list }}"
 
 - name: initiate letsencrypt challenge
   letsencrypt:
-    account_key: ../demos/certs/letsencrypt_account.pem
+    account_key: "{{ aws_certs_path }}/letsencrypt_account.pem"
     acme_directory: https://acme-v01.api.letsencrypt.org/directory
     challenge: dns-01
-    cert: ../demos/certs/{{ item }}/cert.pem
-    csr: ../demos/certs/{{ item }}.csr
+    cert: "{{ aws_certs_path }}/{{ item }}/cert.pem"
+    csr: "{{ aws_certs_path }}/{{ item }}.csr"
   loop: "{{ cert_list }}"
   register: le_challenge
 
@@ -82,12 +82,12 @@
 
 - name: validate the challenge and retrieve the certficates
   letsencrypt:
-    account_key: ../demos/certs/letsencrypt_account.pem
+    account_key: "{{ aws_certs_path }}/letsencrypt_account.pem"
     acme_directory: https://acme-v01.api.letsencrypt.org/directory
     challenge: dns-01
-    cert: ../demos/certs/{{ item.item }}/cert.pem
-    chain: ../demos/certs/{{ item.item }}/ca.pem
-    csr: ../demos/certs/{{ item.item }}.csr
+    cert: "{{ aws_certs_path }}/{{ item.item }}/cert.pem"
+    chain: "{{ aws_certs_path }}/{{ item.item }}/ca.pem"
+    csr: "{{ aws_certs_path }}/{{ item.item }}.csr"
     data: "{{ item }}"
   loop: "{{ le_challenge.results }}"
   loop_control:
