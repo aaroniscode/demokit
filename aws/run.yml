@@ -7,7 +7,7 @@
       import_role:
         name: aws_ec2
       vars:
-        aws_ec2_limit_tag: "{{ limit | default(None) }}"
+        aws_ec2_limit_tags: "{{ limit | default([]) }}"
 
     - meta: refresh_inventory
 
@@ -15,14 +15,14 @@
       import_role:
         name: aws_route53_records
   vars_files:
-    - ../demos/settings/aws_ec2.yml
+    - /bind/settings/aws_ec2.yml
 
 - name: wait for instances
   hosts: >-
     ec2
-    {% if limit is defined -%}
-      {{ ':&tag_' + limit }}
-    {% endif -%}
+    {% for tag in limit | default([]) %}
+      {{ ':&tag_' + tag }}
+    {% endfor %}
   gather_facts: false
   tasks:
     - name: wait for SSH/WinRM
@@ -31,9 +31,9 @@
 - name: set hostname
   hosts: >-
     ec2
-    {% if limit is defined -%}
-      {{ ':&tag_' + limit }}
-    {% endif -%}
+    {% for tag in limit | default([]) %}
+      {{ ':&tag_' + tag }}
+    {% endfor %}
   tasks:
     - import_role:
         name: set_hostname

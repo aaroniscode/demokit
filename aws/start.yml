@@ -1,0 +1,6 @@
+---
+- import_playbook: /demokit/aws/run.yml
+  vars:
+    aws_ec2_limit_tags: "{{ limit | default([]) }}"
+    aws_ec2_state: start_only_stopped
+    aws_ec2_wait: true

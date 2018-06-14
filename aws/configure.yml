@@ -1,5 +1,5 @@
 ---
-- name: create required AWS infrastructure
+- name: configure AWS
   hosts: localhost
   gather_facts: false
   roles:
@@ -8,5 +8,5 @@
     - role: aws_security_groups
     - role: aws_route53_letsencrypt
   vars_files:
-    - ../demos/settings/aws_route53_letsencrypt.yml
-    - ../demos/settings/aws_security_groups.yml
+    - /bind/settings/aws_route53_letsencrypt.yml
+    - /bind/settings/aws_security_groups.yml

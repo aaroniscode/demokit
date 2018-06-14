@@ -19,5 +19,5 @@
     - role: aws_vpc
       aws_vpc_state: absent
   vars_files:
-    - ../demos/settings/aws_ec2.yml
-    - ../demos/settings/aws_security_groups.yml
+    - /bind/settings/aws_ec2.yml
+    - /bind/settings/aws_security_groups.yml
