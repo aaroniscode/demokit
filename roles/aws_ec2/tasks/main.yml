@@ -1,5 +1,5 @@
 ---
-- name: generate ec2/subnet filter
+- name: create aws filter
   set_fact:
     aws_ec2_tags_formatted: >
       {{ aws_ec2_tags_formatted | default({}) | combine(
@@ -10,12 +10,21 @@
     label: "{{ item.key + ':' + item.value }}"
   with_dict: "{{ aws_ec2_tags }}"
 
+- name: create limit filter
+  set_fact:
+    aws_ec2_limit_tags_formatted: >
+      {{ aws_ec2_limit_tags_formatted | default({}) | combine(
+          { 'tag:' + item: '' }
+        )
+      }}
+  loop: "{{ aws_ec2_limit_tags }}"
+
 - name: find existing ec2 instances
   ec2_instance_facts:
     filters: >-
-      {% if aws_ec2_limit_tag -%}
+      {% if aws_ec2_limit_tags | count -%}
         {{
-          aws_ec2_tags_formatted | combine( { 'tag:' + aws_ec2_limit_tag: ''} )
+          aws_ec2_tags_formatted | combine( aws_ec2_limit_tags_formatted  )
         }}
       {% else -%}
         {{ aws_ec2_tags_formatted }}
