@@ -1,4 +1,9 @@
 ---
+- name: create {{ aws_certs_path }} directory
+  file:
+    path: "{{ aws_certs_path }}"
+    state: directory
+
 - name: generate letsencrypt account key
   openssl_privatekey:
     path: "{{ aws_certs_path }}/letsencrypt_account.pem"
