@@ -2,7 +2,6 @@
 - name: create AWS key pair using existing public key
   ec2_key:
     name: "{{ aws_key_name }}"
-    force: false
     key_material: "{{ lookup('file', aws_key_public_key_file) }}"
     profile: "{{ aws_profile }}"
     region: "{{ aws_region }}"
