@@ -5,18 +5,18 @@
 
 # A boto configuration profile may be used to separate out credentials
 # see http://boto.readthedocs.org/en/latest/boto_config_tut.html
-boto_profile = {{ setup_aws_profile }}
+boto_profile = {{ aws_profile }}
 
 # AWS regions to make calls to. Set this to a comma separated list of regions.
 # E.g. 'us-east-1,us-west-1,us-west-2'
-regions = {{ setup_aws_region }}
+regions = {{ aws_region }}
 
 # Instance filters can be used to control which instances are retrieved for
 # inventory. For the full list of possible filters, please read the EC2 API
 # docs: http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-DescribeInstances.html#query-DescribeInstances-filters
 # Filters are key/value pairs separated by '=', to list multiple filters use
 # a list separated by commas. To "AND" criteria together, use "&".
-instance_filters = tag:Project={{ setup_project_tag }}&tag:Owner={{ setup_owner_tag }}
+instance_filters = tag:Project={{ aws_project_tag | default('demokit') }}&tag:Owner={{ aws_username }}
 
 #
 # Modify settings ABOVE this line ###

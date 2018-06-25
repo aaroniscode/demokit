@@ -1,51 +1,47 @@
 ---
-# Ansible will use this key file to SSH into hosts and configure
-# Must pair the aws_key_public_key_file below
-ansible_ssh_private_key_file: {{ setup_ssh_private_key }}
+# Ansible uses this key file to SSH into hosts and configure
+# Pairs with the ssh_public_key_file below
+ansible_ssh_private_key_file: /bind/ssh/demokit.pem
 
 # AWS key pair requires a unique name in a region
-aws_key_name: {{ setup_aws_key_name }}
-
-# AWS key pair can be created dynamically by public key that matches private key above
-aws_key_public_key_file: {{ setup_ssh_public_key }}
+aws_key_name: {{ aws_username }}
 
 # Default AWS profile and region to use for all AWS resources
-aws_profile: {{ setup_aws_profile }}
-aws_region: {{ setup_aws_region }}
+aws_profile: {{ aws_profile }}
+aws_region: {{ aws_region }}
 
 # Domain name to assign to aws_ec2 hosts
-aws_route53_domain: {{ setup_aws_domain }}
+aws_route53_domain: {{ aws_route53_domain }}
 
 # AWS profile to use for Route 53 DNS. If you have you own domain and have configured
 # a Hosted Zone in AWS, you can use a separate AWS profile just for Route 53 DNS
-aws_route53_profile: {{ setup_aws_route53_profile }}
+aws_route53_profile: {{ aws_route53_profile }}
 
 # These tags are placed on every AWS resource to track ownership
 # The same tags MUST be included in the ec2.ini dynamic inventory config file
 aws_tags:
-  Owner: {{ setup_owner_tag }}
-  Project: {{ setup_project_tag }}
+  Owner: {{ aws_username }}
+  Project: {{ aws_project_tag | default('demokit') }}
 
 # After a Windows instance is launched, the Administrator password will be set to this
 # The password must meet default Windows complexity requirements or it will fail to set!
-aws_windows_admin_password: {{ setup_windows_password }}
+aws_windows_admin_password: {{ windows_password }}
 
 # Ansible identifies a VPC uniquely using name/CIDR
 # Since VPC CIDRs can be duplicated, a unique name is required
-aws_vpc_name: {{ setup_aws_vpc_name }}
-
-# Path to Docker EE license file
-# Note: Location is relative to demos/install_docker_ee.yml playbook
-docker_ee_license_file: licenses/docker_subscription.lic
+aws_vpc_name: {{ aws_username + '-demokit' }}
 
 # Docker EE URL with an active subscription
-docker_ee_url: {{ setup_docker_ee_url }}
+docker_ee_url: {{ docker_ee_url }}
 
 # URL of the host or URL of the load balancer in front of DTR
-dtr_url: https://dtr1.{{ setup_aws_domain }}
+dtr_url: https://dtr1.{{ aws_route53_domain }}
 
 # UCP admin password set during installation
-ucp_password: {{ setup_ucp_password }}
+ucp_password: {{ ucp_password }}
 
 # URL of the host or URL of the load balancer in front of UCP
-ucp_url: https://ucp1.{{ setup_aws_domain }}
+ucp_url: https://ucp1.{{ aws_route53_domain }}
+
+# Used to create AWS key pair and matches private key `ansible_ssh_private_key_file`
+ssh_public_key_file: /bind/ssh/demokit.pub
