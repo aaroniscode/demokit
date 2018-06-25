@@ -15,6 +15,7 @@ aws_ec2:
       - k8s_api
       - ssh
     tags:
+      - ee
       - manager_nodes
   dtr:
     count: 1
@@ -24,6 +25,7 @@ aws_ec2:
       - default
       - ssh
     tags:
+      - ee
       - registry_nodes
       - worker_nodes
     volumes:
@@ -38,6 +40,7 @@ aws_ec2:
       - default
       - ssh
     tags:
+      - ee
       - worker_nodes
   windows:
     instance: t2.medium
@@ -48,6 +51,7 @@ aws_ec2:
       - rdp
       - winrm
     tags:
+      - ee
       - worker_nodes
 # Docker EE test
   ucptest:
@@ -59,6 +63,7 @@ aws_ec2:
       - k8s_api
       - ssh
     tags:
+      - eetest
       - manager_nodes
   dtrtest:
     count: 1
@@ -68,6 +73,7 @@ aws_ec2:
       - default
       - ssh
     tags:
+      - eetest
       - registry_nodes
       - worker_nodes
     volumes:
@@ -82,6 +88,7 @@ aws_ec2:
       - default
       - ssh
     tags:
+      - eetest
       - worker_nodes
   windowstest:
     instance: t2.medium
@@ -92,6 +99,7 @@ aws_ec2:
       - rdp
       - winrm
     tags:
+      - eetest
       - worker_nodes
 # K8s demo
   master:
