@@ -22,15 +22,4 @@
       groups: docker
       append: yes
 
-# Currently buggy, temporary work-around below
-#
-#  - name: reset ssh connection to allow user changes to affect 'current login user'
-#    meta: reset_connection
-
-  - name: reset ssh connection to allow user changes to affect 'current login user'
-    shell: sleep 1; pkill -u {{ ansible_ssh_user }} sshd
-    async: 3
-    poll: 2
-    changed_when: false
-
   become: true
