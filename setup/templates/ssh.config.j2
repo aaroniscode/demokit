@@ -1,0 +1,9 @@
+{% for key, value in aws_ec2.iteritems() %}
+Host {{ key }}*
+  Hostname %h.{{ aws_route53_domain }}
+  User ubuntu
+  IdentityFile /bind/ssh/demokit.pem
+  StrictHostKeyChecking no
+  UserKnownHostsFile /dev/null
+  LogLevel QUIET
+{% endfor %}
