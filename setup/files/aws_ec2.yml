@@ -5,6 +5,7 @@
 # - ubuntu_1804 (ubuntu)
 # - windows_server_2016 (windows)
 aws_ec2:
+# Docker EE demo
   ucp:
     count: 1
     instance: t2.medium
@@ -48,3 +49,71 @@ aws_ec2:
       - winrm
     tags:
       - worker_nodes
+# Docker EE test
+  ucptest:
+    count: 1
+    instance: t2.medium
+    os: ubuntu_1604
+    security_groups:
+      - default
+      - k8s_api
+      - ssh
+    tags:
+      - manager_nodes
+  dtrtest:
+    count: 1
+    instance: t2.medium
+    os: ubuntu_1604
+    security_groups:
+      - default
+      - ssh
+    tags:
+      - registry_nodes
+      - worker_nodes
+    volumes:
+      - device_name: /dev/sda1
+        ebs:
+          volume_size: 40
+  linuxtest:
+    instance: t2.micro
+    count: 3
+    os: ubuntu_1604
+    security_groups:
+      - default
+      - ssh
+    tags:
+      - worker_nodes
+  windowstest:
+    instance: t2.medium
+    os: windows_server_2016
+    count: 2
+    security_groups:
+      - default
+      - rdp
+      - winrm
+    tags:
+      - worker_nodes
+# K8s demo
+  master:
+    count: 1
+    instance: t2.medium
+    os: ubuntu_1804
+    security_groups:
+      - default
+      - k8s_api
+      - ssh
+    tags:
+      - k8s
+      - master
+  node:
+    count: 2
+    instance: t2.medium
+    os: ubuntu_1804
+    security_groups:
+      - default
+      - k8s_api
+      - ssh
+    tags:
+      - k8s
+      - node
+      - ubuntu
