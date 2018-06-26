@@ -1,0 +1,6 @@
+---
+- import_playbook: /demokit/aws/terminate.yml
+  tags: instances
+  vars:
+    limit: 
+      - k8s

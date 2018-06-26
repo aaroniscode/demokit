@@ -1,0 +1,42 @@
+---
+- name: k8s prerequisites
+  hosts: >-
+    tag_k8s
+    {% for tag in limit | default([]) %}
+      {{ ':&tag_' + tag }}
+    {% endfor %}
+  roles:
+    - docker_ce_engine
+    - kubeadm
+  tags: prereqs
+
+- name: k8s master
+  hosts: >-
+    tag_k8s:&tag_master
+    {% for tag in limit | default([]) %}
+      {{ ':&tag_' + tag }}
+    {% endfor %}
+  roles:
+    - kubeadm_init
+    - calico
+  tags: master
+
+- name: k8s nodes
+  hosts: >-
+    tag_k8s:&tag_node
+    {% for tag in limit | default([]) %}
+      {{ ':&tag_' + tag }}
+    {% endfor %}
+  tasks:
+    - name: get join token
+      become: true
+      command: kubeadm token create --print-join-command --ttl 5m
+      changed_when: false
+      delegate_to: "{{ groups['tag_k8s'] | intersect(groups['tag_master']) | first }}"
+      register: join_command
+      run_once: true
+
+    - name: join node to the cluster
+      become: true
+      command: "{{ join_command.stdout | trim }}"
+  tags: nodes

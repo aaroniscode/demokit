@@ -1,0 +1,6 @@
+---
+- import_playbook: /demokit/aws/stop.yml
+  tags: instances
+  vars:
+    limit: 
+      - k8s
