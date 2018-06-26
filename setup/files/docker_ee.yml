@@ -1,29 +1,11 @@
 ---
-# Default is `stable-17.06`
-#docker_ee_engine_linux_channel: test-17.06
+#docker_ee_engine_linux_channel: stable-17.06
+#dtr_version: latest
+#ucp_version: latest
 
 # Default is null, which results in latest stable
 # Can choose a channel or specific version
-#docker_ee_engine_windows_version: test
+#docker_ee_engine_windows_version:
 
 # Set to false and no demo data will be populated after intallation
 docker_ee_populate: true
-
-# Required only when either ucp_test or dtr_test is set to `true`
-# Test versions accessible by Docker employees and must be logged into Docker Hub
-#docker_login_username: docker_hub_username
-#docker_login_email: first.last@docker.com
-#docker_login_password: docker_hub_password
-
-# Default is `false`. Set to `true` to install a test version
-#dtr_test: true
-
-# Default is `latest`
-#dtr_version: 2.5.0
-
-# Default is `false`. Set to `true` to install a test version
-# If installing a test version, set ucp_version as well
-#ucp_test: true
-
-# Default is `latest`
-#ucp_version: 3.0.0
