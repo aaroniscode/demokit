@@ -124,6 +124,9 @@ def ee_windows(args):
     check_windows()
     run_ansible('ee/windows')
 
+def eetest(args):
+    print('Feature under development...')
+
 def eetest_install(args):
     check_ee()
     check_eetest()
@@ -179,7 +182,7 @@ def parser():
     aws_parser = subparser.add_parser('aws', help='commands to manage AWS resources')
     debug_parser = subparser.add_parser('debug').set_defaults(func=debug)
     ee_parser = subparser.add_parser('ee', help='commands to demo Docker EE 2.0')
-    eetest_parser = subparser.add_parser('eetest', help='commands to demo Docker EE test versions (coming soon)')
+    eetest_parser = subparser.add_parser('eetest', help='commands to demo Docker EE test versions (coming soon)').set_defaults(func=eetest)
     k8s_parser = subparser.add_parser('k8s', help='commands to demo Kubernetes on Docker CE')  
     subparser.add_parser('settings', help='reset demo settings, backup any changed files').set_defaults(func=settings)
     subparser.add_parser('setup', help='update demokit configuration').set_defaults(func=setup)
