@@ -1,0 +1,26 @@
+---
+# AWS profile and region to use for all AWS resources
+aws_profile: {{ setup_aws_profile | default(aws_profile) | default(None) }}
+aws_region: {{ setup_aws_region | default(aws_region) | default(None) }}
+
+# Domain name to assign to aws_ec2 hosts
+aws_route53_domain: {{ setup_aws_route53_domain | default(aws_route53_domain) | default(None) }}
+aws_route53_profile: {{ setup_aws_profile | default(aws_profile) | default(None) }}
+
+# Used for Owner tag and VPC naming
+aws_username: {{ setup_aws_username | default(aws_username) | default(None) }}
+
+# Docker EE
+docker_ee_url: {{ setup_docker_ee_url | default(docker_ee_url) | default(None) }}
+ucp_password: {{ setup_ucp_password | default(ucp_password) | default(None) }}
+
+# Docker EE Test
+docker_hub_username: {{ setup_docker_hub_username | default(docker_hub_username) | default(None) }}
+docker_hub_email: {{ setup_docker_hub_email | default(docker_hub_email) | default(None) }}
+docker_hub_password: {{ setup_docker_hub_password | default(docker_hub_password) | default(None) }}
+eetest_engine_version: {{ setup_eetest_engine_version | default(eetest_engine_version) | default(None) }}
+eetest_ucp_version: {{ setup_eetest_ucp_version | default(eetest_ucp_version) | default(None) }}
+eetest_dtr_version: {{ setup_eetest_dtr_version | default(eetest_dtr_version) | default(None) }}
+
+# Windows
+windows_password: {{ setup_windows_password | default(windows_password) | default(None) }}

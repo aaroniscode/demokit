@@ -1,0 +1,46 @@
+---
+- name: demokit settings
+  hosts: localhost
+  gather_facts: false
+  tasks:
+  
+    - name: create /bind/settings directory
+      file:
+        path: /bind/settings
+        state: directory
+
+    - name: aws_ec2.yml -- AWS EC2 instance settings
+      copy:
+        backup: yes
+        src: files/aws_ec2.yml
+        dest: /bind/settings/aws_ec2.yml
+
+    - name: aws_security_groups.yml -- AWS Security Group settings
+      copy:
+        backup: yes
+        src: files/aws_security_groups.yml
+        dest: /bind/settings/aws_security_groups.yml
+
+    - name: aws_route53_letsencrypt.yml -- Let's Encrypt settings
+      copy:
+        backup: yes
+        src: files/aws_route53_letsencrypt.yml
+        dest: /bind/settings/aws_route53_letsencrypt.yml
+
+    - name: docker_ee.yml -- Docker EE settings
+      copy:
+        backup: yes
+        src: files/docker_ee.yml
+        dest: /bind/settings/docker_ee.yml
+
+    - name: ucp_rbac.yml -- UCP RBAC settings
+      template:
+        backup: yes
+        src: files/ucp_rbac.yml
+        dest: /bind/settings/ucp_rbac.yml
+
+    - name: dtr_repos.yml -- DTR repositories settings
+      template:
+        backup: yes
+        src: files/dtr_repos.yml
+        dest: /bind/settings/dtr_repos.yml

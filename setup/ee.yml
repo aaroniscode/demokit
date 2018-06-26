@@ -1,0 +1,61 @@
+---
+- name: ee setup
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - /bind/demokit.yml
+  vars_prompt:
+
+    - name: setup_docker_ee_url
+      private: no
+      prompt: |
+
+        demokit needs a valid Docker EE subscription URL to install Docker EE.
+        If you would like a trial subscription, you can request one at: 
+        https://store.docker.com/editions/enterprise/docker-ee-trial
+
+        The URL looks like: https://storebits.docker.com/ee/linux/sub-abcedf12-abcd-abcd-abcd-abcdef123456
+
+        Docker EE URL?
+      default: "{{ docker_ee_url | default(None) }}"
+
+    - name: setup_docker_ee_license
+      private: no
+      prompt: |
+
+        Docker EE requires a valid license file. Open up your license file with a text editor and
+        copy the json string representing the license key. Paste the JSON string below. demokit will
+        store your license file in the licenses directory of your bind mount.
+
+        If you already have a license key or just want to skip this step, enter `skip` below.
+
+        Docker EE license? (copy/paste JSON string)
+
+    - name: setup_ucp_password
+      private: no
+      prompt: |
+
+        demokit will install and configure Universal Control Plane (UCP). Since it will
+        be accessible on the public Internet, it is a good idea to change the default
+        admin password.
+
+        UCP admin password?
+      default: "{{ ucp_password | default('containyourself', true) }}"
+
+  tasks:
+
+    - name: save demokit settings file
+      template:
+        src: templates/demokit.yml.j2
+        dest: /bind/demokit.yml
+
+    - name: create /bind/licenses directory
+      file:
+        path: /bind/licenses
+        state: directory
+
+    - name: create license file
+      copy: 
+        content: "{{ setup_docker_ee_license }}"
+        dest: /bind/licenses/docker_subscription.lic
+      when: setup_docker_ee_license | lower != 'skip'

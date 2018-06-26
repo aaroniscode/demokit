@@ -1,0 +1,75 @@
+---
+- name: demokit setup
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - /bind/demokit.yml
+  vars_prompt:
+  
+    - name: setup_aws_profile
+      private: no
+      prompt: |
+
+        demokit uses Amazon Web Services (AWS) to create demo environments and
+        launch and manage compute (EC2) instances. If you have multiple AWS accounts
+        you may want to use a named profile. Most users will have setup a `default`
+        profile and can use that.
+
+        NOTE: For all the questions, you can press ENTER to accept the suggested
+        answer in the brackets like [default] below.
+
+        AWS profile?
+      default: "{{ aws_profile | default('default') }}"
+
+    - name: setup_aws_region
+      private: no
+      prompt: |
+
+        demokit launches and manages compute (ec2) instances in a single AWS region.
+        You can always later change this setting and re-run the configure script to
+        change the region.
+
+        AWS region?
+      default: "{{ aws_region | default('us-east-1') }}"
+
+    - name: setup_aws_route53_domain
+      private: no
+      prompt: |
+
+        demokit uses AWS Route 53 to automatically assign DNS names to ec2 instances
+        when they are launched. This requires a Hosted Zone already setup in Route 53.
+        Please make sure you have a Hosted Zone configured before you launch instances.
+
+        Domain name?
+      default: "{{ aws_route53_domain | default('example.com') }}"
+
+    - name: setup_aws_username
+      private: no
+      prompt: |
+
+        demokit tags all AWS resources with `Owner` and `Project` tags to track
+        deployed resources. The `Project` tag defaults to `demokit`. It is recommended
+        to use your AWS username for the `Owner` tag.
+
+        Owner tag?
+      default: "{{ aws_username | default('firstname.lastname') }}"
+
+  tasks:
+
+    - name: save demokit settings file
+      template:
+        src: templates/demokit.yml.j2
+        dest: /bind/demokit.yml
+
+    - name: create /bind/ssh directory
+      file:
+        path: /bind/ssh
+        state: directory
+
+    - openssl_privatekey:
+        path: /bind/ssh/demokit.pem
+
+    - openssl_publickey:
+        format: OpenSSH
+        path: /bind/ssh/demokit.pub
+        privatekey_path: /bind/ssh/demokit.pem

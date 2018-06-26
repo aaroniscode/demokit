@@ -1,0 +1,27 @@
+---
+- name: windows setup
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - /bind/demokit.yml
+  vars_prompt:
+
+    - name: setup_windows_password
+      private: no
+      prompt: |
+
+        For Windows instances, demokit uses Amazon provided AMI's which generate random
+        Windows Administrator passwords on launch. demokit uses a powershell script at
+        launch to configure WinRM and change the Administrator password. It is critical
+        that you choose a password that meets Windows minimum complexity requirements.
+        If it doesn't, the password change will fail without an error message.
+
+        Windows Administrator Password?
+      default: "{{ windows_password | default('ChangeMePlease!', true) }}"
+
+  tasks:
+
+    - name: save demokit settings file
+      template:
+        src: templates/demokit.yml.j2
+        dest: /bind/demokit.yml
