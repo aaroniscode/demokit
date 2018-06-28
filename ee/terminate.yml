@@ -1,6 +1,8 @@
 ---
-- import_playbook: /demokit/aws/terminate.yml
-  tags: instances
+- import_playbook: /demokit/common/command_line.yml
   vars:
-    limit: 
+    title: Terminate Docker EE 2.0 instances
+    limit_to_tags:
       - ee
+
+- import_playbook: /demokit/aws/terminate.yml

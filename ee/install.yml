@@ -1,13 +1,12 @@
 ---
-- import_playbook: /demokit/aws/run.yml
-  tags: instances
+- import_playbook: /demokit/common/command_line.yml
   vars:
-    limit: 
+    title: Install Docker EE 2.0
+    limit_to_tags:
       - ee
       - ubuntu
 
+- import_playbook: /demokit/aws/run.yml
+  tags: instances
+
 - import_playbook: /demokit/ee/docker_ee.yml
-  vars:
-    limit: 
-      - ee
-      - ubuntu

@@ -1,6 +1,8 @@
 ---
-- import_playbook: /demokit/aws/stop.yml
-  tags: instances
+- import_playbook: /demokit/common/command_line.yml
   vars:
-    limit: 
+    title: Stop K8s instances
+    limit_to_tags:
       - k8s
+
+- import_playbook: /demokit/aws/stop.yml

@@ -1,6 +1,8 @@
 ---
-- import_playbook: /demokit/aws/status.yml
-  tags: instances
+- import_playbook: /demokit/common/command_line.yml
   vars:
-    limit: 
+    title: Status of K8s instances
+    limit_to_tags:
       - k8s
+
+- import_playbook: /demokit/aws/status.yml

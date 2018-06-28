@@ -1,11 +1,11 @@
 ---
-- import_playbook: /demokit/aws/run.yml
-  tags: instances
+- import_playbook: /demokit/common/command_line.yml
   vars:
-    limit: 
+    title: Install K8s on Docker CE 17.06
+    limit_to_tags:
       - k8s
 
+- import_playbook: /demokit/aws/run.yml
+  tags: instances
+
 - import_playbook: /demokit/k8s/k8s.yml
-  vars:
-    limit: 
-      - k8s

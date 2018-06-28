@@ -1,0 +1,13 @@
+---
+- name: "{{ title }}"
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: command line limit {{ ec2tag | default('') }}
+      set_fact: 
+        limit: >-
+          {% if ec2tag is defined -%}
+            {{ limit_to_tags + [ec2tag] }}
+          {% else -%}
+            {{ limit_to_tags }}
+          {% endif -%}

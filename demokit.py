@@ -14,27 +14,6 @@ def ascii_art():
     print("| (_| |  __/ | | | | | (_) |   <| | |_ ")
     print(" \__,_|\___|_| |_| |_|\___/|_|\_\_|\__|\n")
 
-def aws_config(args):
-    run_ansible('aws/configure')
-
-def aws_destroy(args):
-    run_ansible('aws/destroy')
-
-def aws_run(args):
-    run_ansible('aws/run')
-
-def aws_start(args):
-    run_ansible('aws/start')
-
-def aws_status(args):
-    run_ansible('aws/status')
-
-def aws_stop(args):
-    run_ansible('aws/stop')
-
-def aws_terminate(args):
-    run_ansible('aws/terminate')
-
 def check_ee():
     vars = yaml.load(file('/bind/demokit.yml', 'r'))
 
@@ -105,24 +84,12 @@ def debug(args):
 
 def ee_install(args):
     check_ee()
-    run_ansible('ee/install')
-
-def ee_start(args):
-    run_ansible('ee/start')
-
-def ee_status(args):
-    run_ansible('ee/status')
-
-def ee_stop(args):
-    run_ansible('ee/stop')
-
-def ee_terminate(args):
-    run_ansible('ee/terminate')
+    run_ansible(args)
 
 def ee_windows(args):
     check_ee()
     check_windows()
-    run_ansible('ee/windows')
+    run_ansible(args)
 
 def eetest(args):
     print('Feature under development...')
@@ -130,40 +97,13 @@ def eetest(args):
 def eetest_install(args):
     check_ee()
     check_eetest()
-    run_ansible('eetest/install')
-
-def eetest_start(args):
-    run_ansible('eetest/start')
-
-def eetest_status(args):
-    run_ansible('eetest/status')
-
-def eetest_stop(args):
-    run_ansible('eetest/stop')
-
-def eetest_terminate(args):
-    run_ansible('eetest/terminate')
+    run_ansible(args)
 
 def eetest_windows(args):
     check_ee()
     check_eetest()
     check_windows()
-    run_ansible('eetest/windows')
-
-def k8s_install(args):
-    run_ansible('k8s/install')
-
-def k8s_start(args):
-    run_ansible('k8s/start')
-
-def k8s_status(args):
-    run_ansible('k8s/status')
-
-def k8s_stop(args):
-    run_ansible('k8s/stop')
-
-def k8s_terminate(args):
-    run_ansible('k8s/terminate')
+    run_ansible(args)
 
 def parser():
     # Default to printing help info on error
@@ -179,11 +119,14 @@ def parser():
     )
     subparser = parser.add_subparsers(help='', metavar='<command>')
 
+    parent_parser = argparse.ArgumentParser(add_help=False)
+    parent_parser.add_argument('-l', dest='ec2tag', help='limit to instances with the specified tag')
+
     aws_parser = subparser.add_parser('aws', help='commands to manage AWS resources')
     debug_parser = subparser.add_parser('debug').set_defaults(func=debug)
-    ee_parser = subparser.add_parser('ee', help='commands to demo Docker EE 2.0')
+    ee_parser = subparser.add_parser('ee', help='commands to demo Docker EE 2.0', parents=[parent_parser])
     eetest_parser = subparser.add_parser('eetest', help='commands to demo Docker EE test versions (coming soon)').set_defaults(func=eetest)
-    k8s_parser = subparser.add_parser('k8s', help='commands to demo Kubernetes on Docker CE')  
+    k8s_parser = subparser.add_parser('k8s', help='commands to demo Kubernetes on Docker CE', parents=[parent_parser])  
     subparser.add_parser('settings', help='reset demo settings, backup any changed files').set_defaults(func=settings)
     subparser.add_parser('setup', help='update demokit configuration').set_defaults(func=setup)
     ssh_parser = subparser.add_parser('ssh', help='ssh into EC2 instance')
@@ -201,43 +144,19 @@ def parser():
         'config', 
         help='configure AWS VPC, security groups and letsencrypt certs'
     )
-    aws_config_parser.set_defaults(func=aws_config)
+    aws_config_parser.set_defaults(func=run_ansible, play='aws/configure')
 
     aws_destroy_parser = aws_subparser.add_parser(
         'destroy',
         help='terminate EC2 instances and destroy all AWS resources'
     )
-    aws_destroy_parser.set_defaults(func=aws_destroy)
-
-    aws_run_parser = aws_subparser.add_parser(
-        'run',
-        help='launch all EC2 instances in settings/aws_ec2.yml'
-    )
-    aws_run_parser.set_defaults(func=aws_run)
-    
-    aws_start_parser = aws_subparser.add_parser(
-        'start',
-        help='start any stopped EC2 instances'
-    )
-    aws_start_parser.set_defaults(func=aws_start)
+    aws_destroy_parser.set_defaults(func=run_ansible, play='aws/destroy')
 
     aws_status_parser = aws_subparser.add_parser(
         'status',
         help='display any running or stopped EC2 instances'
     )
-    aws_status_parser.set_defaults(func=aws_status)
-
-    aws_stop_parser = aws_subparser.add_parser(
-        'stop',
-        help='shut down all running EC2 instances'
-    )
-    aws_stop_parser.set_defaults(func=aws_stop)
-
-    aws_terminate_parser = aws_subparser.add_parser(
-        'terminate',
-        help='terminate all EC2 instances'
-    )
-    aws_terminate_parser.set_defaults(func=aws_terminate)
+    aws_status_parser.set_defaults(func=run_ansible, play='aws/status')
 
     ee_subparser = ee_parser.add_subparsers(
         description=None,
@@ -250,37 +169,37 @@ def parser():
         'install', 
         help='install Docker EE UCP, DTR and Linux nodes'
     )
-    ee_install_parser.set_defaults(func=ee_install)
+    ee_install_parser.set_defaults(func=ee_install, play='ee/install')
 
     ee_start_parser = ee_subparser.add_parser(
         'start', 
         help='start any stopped Docker EE demo instances'
     )
-    ee_start_parser.set_defaults(func=ee_start)
+    ee_start_parser.set_defaults(func=run_ansible, play='ee/start')
 
     ee_status_parser = ee_subparser.add_parser(
         'status', 
         help='display running or stopped Docker EE demo instances'
     )
-    ee_status_parser.set_defaults(func=ee_status)
+    ee_status_parser.set_defaults(func=run_ansible, play='ee/status')
 
     ee_stop_parser = ee_subparser.add_parser(
         'stop', 
         help='shut down running Docker EE demo instances'
     )
-    ee_stop_parser.set_defaults(func=ee_stop)
+    ee_stop_parser.set_defaults(func=run_ansible, play='ee/stop')
 
     ee_terminate_parser = ee_subparser.add_parser(
         'terminate', 
         help='terminate only Docker EE demo instances'
     )
-    ee_terminate_parser.set_defaults(func=ee_terminate)
+    ee_terminate_parser.set_defaults(func=run_ansible, play='ee/terminate')
 
     ee_windows_parser = ee_subparser.add_parser(
         'windows', 
         help='install Docker EE Windows nodes'
     )
-    ee_windows_parser.set_defaults(func=ee_windows)
+    ee_windows_parser.set_defaults(func=ee_windows, play='ee/windows')
 
     # eetest_subparser = eetest_parser.add_subparsers(
     #     description=None,
@@ -293,37 +212,37 @@ def parser():
     #     'install', 
     #     help='install Docker EE UCP, DTR test versions'
     # )
-    # eetest_install_parser.set_defaults(func=eetest_install)
+    # eetest_install_parser.set_defaults(func=eetest_install, play='eetest/install')
 
     # eetest_start_parser = eetest_subparser.add_parser(
     #     'start', 
     #     help='start any stopped Docker EE test instances'
     # )
-    # eetest_start_parser.set_defaults(func=eetest_start)
+    # eetest_start_parser.set_defaults(func=run_ansible, play='eetest/start')
 
     # eetest_status_parser = eetest_subparser.add_parser(
     #     'status', 
     #     help='display running or stopped Docker EE test instances'
     # )
-    # eetest_status_parser.set_defaults(func=eetest_status)
+    # eetest_status_parser.set_defaults(func=run_ansible, play='eetest/status')
 
     # eetest_stop_parser = eetest_subparser.add_parser(
     #     'stop', 
     #     help='shut down running Docker EE test instances'
     # )
-    # eetest_stop_parser.set_defaults(func=eetest_stop)
+    # eetest_stop_parser.set_defaults(func=run_ansible, play='eetest/stop')
 
     # eetest_terminate_parser = eetest_subparser.add_parser(
     #     'terminate', 
     #     help='terminate only Docker EE test instances'
     # )
-    # eetest_terminate_parser.set_defaults(func=eetest_terminate)
+    # eetest_terminate_parser.set_defaults(func=run_ansible, play='eetest/terminate')
 
     # eetest_windows_parser = eetest_subparser.add_parser(
     #     'windows', 
     #     help='install Docker EE test version on Windows nodes'
     # )
-    # eetest_windows_parser.set_defaults(func=eetest_windows)
+    # eetest_windows_parser.set_defaults(func=eetest_windows, play='eetest/windows')
 
     k8s_subparser = k8s_parser.add_subparsers(
         description=None,
@@ -336,38 +255,43 @@ def parser():
         'install', 
         help='install Kubernetes on Docker CE'
     )
-    k8s_install_parser.set_defaults(func=k8s_install)
+    k8s_install_parser.set_defaults(func=run_ansible, play='k8s/install')
 
     k8s_start_parser = k8s_subparser.add_parser(
         'start', 
         help='start any stopped k8s instances'
     )
-    k8s_start_parser.set_defaults(func=k8s_start)
+    k8s_start_parser.set_defaults(func=run_ansible, play='k8s/start')
 
     k8s_status_parser = k8s_subparser.add_parser(
         'status', 
         help='display running or stopped k8s instances'
     )
-    k8s_status_parser.set_defaults(func=k8s_status)
+    k8s_status_parser.set_defaults(func=run_ansible, play='k8s/status')
 
     k8s_stop_parser = k8s_subparser.add_parser(
         'stop', 
         help='shut down running k8s instances'
     )
-    k8s_stop_parser.set_defaults(func=k8s_stop)
+    k8s_stop_parser.set_defaults(func=run_ansible, play='k8s/stop')
 
     k8s_terminate_parser = k8s_subparser.add_parser(
         'terminate', 
         help='terminate only k8s instances'
     )
-    k8s_terminate_parser.set_defaults(func=k8s_terminate)
+    k8s_terminate_parser.set_defaults(func=run_ansible, play='k8s/terminate')
 
     args = parser.parse_args()
     args.func(args)
 
-def run_ansible(play):
+def run_ansible(args):
     create_ec2ini_allyml()
-    call(['ansible-playbook', play + '.yml'])
+
+    if 'ec2tag' in args and args.ec2tag:
+        call(['ansible-playbook', args.play + '.yml', '-e', 'ec2tag=' + args.ec2tag])
+
+    else:
+        call(['ansible-playbook', args.play + '.yml'])
 
 def setup(args):    
     # vars_files in setup/setup.yml will error if the file doesn't exist
