@@ -5,7 +5,6 @@ aws_region: {{ setup_aws_region | default(aws_region) | default(None) }}
 
 # Domain name to assign to aws_ec2 hosts
 aws_route53_domain: {{ setup_aws_route53_domain | default(aws_route53_domain) | default(None) }}
-aws_route53_profile: {{ setup_aws_profile | default(aws_profile) | default(None) }}
 
 # Used for Owner tag and VPC naming
 aws_username: {{ setup_aws_username | default(aws_username) | default(None) }}

@@ -15,7 +15,7 @@ aws_route53_domain: {{ aws_route53_domain }}
 
 # AWS profile to use for Route 53 DNS. If you have you own domain and have configured
 # a Hosted Zone in AWS, you can use a separate AWS profile just for Route 53 DNS
-aws_route53_profile: {{ aws_route53_profile }}
+aws_route53_profile: {{ aws_route53_profile | default(aws_profile) }}
 
 # These tags are placed on every AWS resource to track ownership
 # The same tags MUST be included in the ec2.ini dynamic inventory config file
