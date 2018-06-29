@@ -8,7 +8,7 @@ aws_ec2:
 # Docker EE demo
   ucp:
     count: 1
-    instance: t2.medium
+    instance: t2.large
     os: ubuntu_1604
     security_groups:
       - default
