@@ -39,6 +39,11 @@
       aws_ec2_limit_tags | intersect(item.value.tags + [aws_ec2_os_tag[item.value.os]]) | count ==
       aws_ec2_limit_tags | count
 
+- name: fail if ec2 instance list is empty
+  fail:
+    msg: "no ec2 instances have the combined tags: [{{ aws_ec2_limit_tags | join(', ') }}]"
+  when: aws_ec2_formatted is not defined
+
 - import_role:
     name: aws_ami
   vars:
@@ -66,7 +71,7 @@
   poll: 0
   register: ec2_async_create
   with_subelements:
-    - "{{ aws_ec2_formatted | default([]) }}"
+    - "{{ aws_ec2_formatted }}"
     - suffix_list
 
 - name: wait for starting/creating
