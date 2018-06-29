@@ -22,7 +22,7 @@
         AWS access key ID?
       default: "{{ aws_access_key_id | default(None) }}"
 
-    - name: setup_aws_secret_access_key
+    - name: setup_aws_secret_access_key_plain_text
       private: no
       prompt: |
         AWS secret access key?
@@ -61,6 +61,10 @@
 
   tasks:
 
+    - name: encode AWS secret access key
+      set_fact:
+        setup_aws_secret_access_key: "{{ setup_aws_secret_access_key_plain_text | base64encode }}"
+
     - name: save demokit settings file
       template:
         src: templates/demokit.yml.j2
@@ -84,7 +88,7 @@
     - name: test EC2 access
       ec2_instance_facts:
         aws_access_key: "{{ setup_aws_access_key_id }}"
-        aws_secret_key: "{{ setup_aws_secret_access_key }}"
+        aws_secret_key: "{{ setup_aws_secret_access_key_plain_text }}"
         region: "{{ setup_aws_region }}"
       ignore_errors: yes
       register: ec2_test
@@ -97,7 +101,7 @@
     - name: check AWS Route 53 access
       route53_facts:
         aws_access_key: "{{ setup_aws_access_key_id }}"
-        aws_secret_key: "{{ setup_aws_secret_access_key }}"
+        aws_secret_key: "{{ setup_aws_secret_access_key_plain_text }}"
         region: "{{ setup_aws_region }}"
         query: hosted_zone
       register: route53_test

@@ -358,9 +358,8 @@ def main():
 def welcome():
     print('Welcome to demokit!  You need a local directory to save settings.\n')
     print('    mkdir ~/demokit\n')
-    print('Create an alias, because life.\n')
+    print('Create an alias, because life. Then run demokit.\n')
     print('    alias demokit="docker run --rm -v ~/demokit:/bind -it demokit/demokit"\n')
-    print('Run demokit.\n')
     print('    demokit\n')
 
 if __name__ == '__main__':
