@@ -4,7 +4,7 @@ aws_access_key_id: {{ setup_aws_access_key_id | default(aws_access_key_id) | def
 aws_secret_access_key: {{ setup_aws_secret_access_key | default(aws_secret_access_key) | default(None) }}
 aws_region: {{ setup_aws_region | default(aws_region) | default(None) }}
 aws_route53_domain: {{ setup_aws_route53_domain | default(aws_route53_domain) | default(None) }}
-aws_username: {{ setup_aws_username | default(aws_username) | default(None) }}
+aws_owner_tag: {{ aws_owner_tag | default(None) }}
 
 # Docker EE
 docker_ee_url: {{ setup_docker_ee_url | default(docker_ee_url) | default(None) }}

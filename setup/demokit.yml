@@ -48,17 +48,6 @@
         Domain name?
       default: "{{ aws_route53_domain | default('example.com') }}"
 
-    - name: setup_aws_username
-      private: no
-      prompt: |
-
-        demokit tags all AWS resources with `Owner` and `Project` tags to track
-        deployed resources. The `Project` tag defaults to `demokit`. It is recommended
-        to use your AWS username for the `Owner` tag.
-
-        Owner tag?
-      default: "{{ aws_username | default('firstname.lastname') }}"
-
   tasks:
 
     - name: encode AWS secret access key
@@ -85,6 +74,28 @@
         path: /bind/ssh/demokit.pub
         privatekey_path: /bind/ssh/demokit.pem
 
+    - name: test AWS access
+      aws_caller_facts:
+        aws_access_key: "{{ setup_aws_access_key_id }}"
+        aws_secret_key: "{{ setup_aws_secret_access_key_plain_text }}"
+        region: "{{ setup_aws_region }}"
+      ignore_errors: yes
+      register: aws_test
+
+    - name: fail if unable to access AWS
+      fail:
+        msg: Please check your AWS permissions and run demokit again.
+      when: aws_test is failed
+
+    - name: lookup AWS username
+      set_fact:
+        aws_owner_tag: "{{ aws_test.arn.split('/')[1] }}"
+
+    - name: demokit will use "{{ aws_owner_tag }}" as AWS owner tag
+      template:
+        src: templates/demokit.yml.j2
+        dest: /bind/demokit.yml
+
     - name: test EC2 access
       ec2_instance_facts:
         aws_access_key: "{{ setup_aws_access_key_id }}"
@@ -95,7 +106,7 @@
 
     - name: fail if unable to access EC2
       fail:
-        msg: Please check your AWS access key and permissions and run demokit again.
+        msg: Please add EC2 permissions to your AWS user account and run demokit again.
       when: ec2_test is failed
 
     - name: check AWS Route 53 access
@@ -108,7 +119,7 @@
 
     - name: fail if unable to access Route 53
       fail:
-        msg: Please check your AWS access key and permissions and run demokit again.
+        msg: Please add Route 53 permissions to your AWS user account and run demokit again.
       when: route53_test is failed
 
     - name: search Route 53 Hosted Zones for {{ setup_aws_route53_domain }}

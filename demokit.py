@@ -345,7 +345,7 @@ def main():
     vars = yaml.load(stream)
     req_vars = [
         'aws_access_key_id', 'aws_secret_access_key', 'aws_region', 'aws_route53_domain',
-        'aws_username'
+        'aws_owner_tag'
     ]
 
     if not vars or not all(key in vars and vars[key] is not None for key in req_vars):

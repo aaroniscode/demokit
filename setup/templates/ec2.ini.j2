@@ -16,7 +16,7 @@ regions = {{ aws_region }}
 # docs: http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-DescribeInstances.html#query-DescribeInstances-filters
 # Filters are key/value pairs separated by '=', to list multiple filters use
 # a list separated by commas. To "AND" criteria together, use "&".
-instance_filters = tag:Project={{ aws_project_tag | default('demokit') }}&tag:Owner={{ aws_username }}
+instance_filters = tag:Project={{ aws_project_tag | default('demokit') }}&tag:Owner={{ aws_owner_tag }}
 
 #
 # Modify settings ABOVE this line ###
