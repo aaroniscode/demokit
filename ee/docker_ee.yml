@@ -2,9 +2,9 @@
 - name: install Docker engine
   hosts: >-
     tag_ee
-    {% for tag in limit | default([]) %}
+    {% for tag in hostvars['localhost'].limit | default([]) -%}
       {{ ':&tag_' + tag }}
-    {% endfor %}
+    {% endfor -%}
   roles:
     - docker_ee_engine
   tags:
@@ -15,9 +15,9 @@
 - name: install UCP
   hosts: >-
     tag_ee:&tag_manager_nodes[0]
-    {% for tag in limit | default([]) %}
+    {% for tag in hostvars['localhost'].limit | default([]) -%}
       {{ ':&tag_' + tag }}
-    {% endfor %}
+    {% endfor -%}
   roles:
     - role: copy_cert
     - role: ucp_manager
@@ -31,9 +31,9 @@
 - name: join worker nodes
   hosts: >-
     tag_ee:&tag_worker_nodes
-    {% for tag in limit | default([]) %}
+    {% for tag in hostvars['localhost'].limit | default([]) -%}
       {{ ':&tag_' + tag }}
-    {% endfor %}
+    {% endfor -%}
   roles:
     - role: ucp_worker
       ucp_worker_ucp_manager_group: tag_manager_nodes
@@ -45,9 +45,9 @@
 - name: install DTR
   hosts: >-
     tag_ee:&tag_registry_nodes[0]
-    {% for tag in limit | default([]) %}
+    {% for tag in hostvars['localhost'].limit | default([]) -%}
       {{ ':&tag_' + tag }}
-    {% endfor %}
+    {% endfor -%}
   roles:
     - role: dtr
       dtr_ca: '"{{ lookup("file", "/bind/certs/" + inventory_hostname + "/ca.pem") }}"'
@@ -89,9 +89,9 @@
 - name: populate DTR with demo data
   hosts: >-
     tag_ee:&tag_registry_nodes[0]
-    {% for tag in limit | default([]) %}
+    {% for tag in hostvars['localhost'].limit | default([]) -%}
       {{ ':&tag_' + tag }}
-    {% endfor %}
+    {% endfor -%}
   gather_facts: false
   tasks:
     - include_role:

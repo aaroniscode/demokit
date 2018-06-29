@@ -20,9 +20,9 @@
 - name: wait for instances
   hosts: >-
     ec2
-    {% for tag in limit | default([]) %}
+    {% for tag in hostvars['localhost'].limit | default([]) -%}
       {{ ':&tag_' + tag }}
-    {% endfor %}
+    {% endfor -%}
   gather_facts: false
   tasks:
     - name: wait for SSH/WinRM
@@ -31,9 +31,9 @@
 - name: set hostname
   hosts: >-
     ec2
-    {% for tag in limit | default([]) %}
+    {% for tag in hostvars['localhost'].limit | default([]) -%}
       {{ ':&tag_' + tag }}
-    {% endfor %}
+    {% endfor -%}
   tasks:
     - import_role:
         name: set_hostname
