@@ -1,12 +1,9 @@
 ---
-# AWS profile and region to use for all AWS resources
-aws_profile: {{ setup_aws_profile | default(aws_profile) | default(None) }}
+# AWS
+aws_access_key_id: {{ setup_aws_access_key_id | default(aws_access_key_id) | default(None) }}
+aws_secret_access_key: {{ (setup_aws_secret_access_key | base64encode) | default(aws_secret_access_key) | default(None) }}
 aws_region: {{ setup_aws_region | default(aws_region) | default(None) }}
-
-# Domain name to assign to aws_ec2 hosts
 aws_route53_domain: {{ setup_aws_route53_domain | default(aws_route53_domain) | default(None) }}
-
-# Used for Owner tag and VPC naming
 aws_username: {{ setup_aws_username | default(aws_username) | default(None) }}
 
 # Docker EE
