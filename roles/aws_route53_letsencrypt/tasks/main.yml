@@ -9,44 +9,41 @@
     path: "{{ aws_certs_path }}/letsencrypt_account.pem"
     size: 4096
 
-- name: generate certificate list
-  set_fact:
-    cert_list: >
-      {{
-        cert_list | default([]) +
-        [
-          item + '.' + aws_route53_domain
-        ]
-      }}
-  loop: "{{ aws_route53_letsencrypt }}"
-
 - name: create certificate directories
   file:
-    path: "{{ aws_certs_path }}/{{ item }}"
+    path: "{{ aws_certs_path }}/{{ item.key }}.{{ aws_route53_domain }}"
     state: directory
-  loop: "{{ cert_list }}"
+  loop: "{{ aws_route53_letsencrypt | dict2items }}"
+  loop_control:
+    label: "{{ item.key + '.' + aws_route53_domain }}"
 
 - name: generate certificate private keys
   openssl_privatekey:
-    path: "{{ aws_certs_path }}/{{ item }}/key.pem"
+    path: "{{ aws_certs_path }}/{{ item.key }}.{{ aws_route53_domain }}/key.pem"
     size: 4096
-  loop: "{{ cert_list }}"
+  loop: "{{ aws_route53_letsencrypt | dict2items }}"
+  loop_control:
+    label: "{{ item.key + '.' + aws_route53_domain }}"
 
 - name: generate certificate signing requests
   openssl_csr:
-    path: "{{ aws_certs_path }}/{{ item }}.csr"
-    privatekey_path: "{{ aws_certs_path }}/{{ item }}/key.pem"
-    common_name: "{{ item }}"
-  loop: "{{ cert_list }}"
+    path: "{{ aws_certs_path }}/{{ item.key }}.{{ aws_route53_domain }}.csr"
+    privatekey_path: "{{ aws_certs_path }}/{{ item.key }}.{{ aws_route53_domain }}/key.pem"
+    subject_alt_name: "{{ item.value.sans | map('regex_replace', '^(.+)$', 'DNS:\\1.' + aws_route53_domain) | list }}"
+  loop: "{{ aws_route53_letsencrypt | dict2items }}"
+  loop_control:
+    label: "{{ item.key + '.' + aws_route53_domain }}"
 
 - name: initiate letsencrypt challenge
-  letsencrypt:
+  acme_certificate:
     account_key: "{{ aws_certs_path }}/letsencrypt_account.pem"
     acme_directory: https://acme-v01.api.letsencrypt.org/directory
     challenge: dns-01
-    cert: "{{ aws_certs_path }}/{{ item }}/cert.pem"
-    csr: "{{ aws_certs_path }}/{{ item }}.csr"
-  loop: "{{ cert_list }}"
+    fullchain: "{{ aws_certs_path }}/{{ item.key }}.{{ aws_route53_domain }}/cert.pem"
+    csr: "{{ aws_certs_path }}/{{ item.key }}.{{ aws_route53_domain }}.csr"
+  loop: "{{ aws_route53_letsencrypt | dict2items }}"
+  loop_control:
+    label: "{{ item.key + '.' + aws_route53_domain }}"
   register: le_challenge
 
 - name: create TXT records to satisfy challenge
@@ -55,46 +52,53 @@
     profile: "{{ aws_route53_profile }}"
     record: >-
       {{
-        item.challenge_data[item.item]['dns-01'].record
+        item.0.challenge_data[item.1]['dns-01'].record
       }}
     state: present
     type: TXT
     ttl: "{{ aws_route53_ttl }}"
     value: >-
       {{
-        '"' + item.challenge_data[item.item]['dns-01'].resource_value + '"'
+        '"' + item.0.challenge_data[item.1]['dns-01'].resource_value + '"'
       }}
     wait: true
     zone: "{{ aws_route53_domain }}"
   async: 300
-  loop: "{{ le_challenge.results }}"
+  loop: "{{ le_challenge.results | le_subelements('challenge_data', skip_missing=True) }}"
   loop_control:
-    label: "{{ item.item }}"
+    label: "{{ item.1 }}"
   poll: 0
   register: route53_async
-  when: item is changed
+  when: item.0 is changed
 
 - name: wait for route53 records to replicate
   async_status:
     jid: "{{ item.ansible_job_id }}"
   loop: "{{ route53_async.results }}"
   loop_control:
-    label: "{{ item.item.item }}"
+    label: "{{ item.item.1 }}"
   register: route53
   retries: 300
   until: route53.finished
   when: item is changed
 
 - name: validate the challenge and retrieve the certficates
-  letsencrypt:
+  acme_certificate:
     account_key: "{{ aws_certs_path }}/letsencrypt_account.pem"
     acme_directory: https://acme-v01.api.letsencrypt.org/directory
     challenge: dns-01
-    cert: "{{ aws_certs_path }}/{{ item.item }}/cert.pem"
-    chain: "{{ aws_certs_path }}/{{ item.item }}/ca.pem"
-    csr: "{{ aws_certs_path }}/{{ item.item }}.csr"
+    fullchain: "{{ aws_certs_path }}/{{ item.item.key }}.{{ aws_route53_domain }}/cert.pem"
+    csr: "{{ aws_certs_path }}/{{ item.item.key }}.{{ aws_route53_domain }}.csr"
     data: "{{ item }}"
   loop: "{{ le_challenge.results }}"
   loop_control:
-    label: "{{ item.item }}"
+    label: "{{ item.item.key + '.' + aws_route53_domain }}"
   when: item is changed
+
+- name: install the DST Root CA X3
+  copy:
+    src: files/dst-root-x3.pem
+    dest: "{{ aws_certs_path }}/{{ item.key }}.{{ aws_route53_domain }}/ca.pem"
+  loop: "{{ aws_route53_letsencrypt | dict2items }}"
+  loop_control:
+    label: "{{ item.key + '.' + aws_route53_domain }}"
