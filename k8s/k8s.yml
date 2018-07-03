@@ -2,7 +2,7 @@
 - name: k8s prerequisites
   hosts: >-
     tag_k8s
-    {% for tag in tag in hostvars['localhost'].limit | default([]) %}
+    {% for tag in hostvars['localhost'].limit | default([]) %}
       {{ ':&tag_' + tag }}
     {% endfor %}
   roles:
@@ -13,7 +13,7 @@
 - name: k8s master
   hosts: >-
     tag_k8s:&tag_master
-    {% for tag in tag in hostvars['localhost'].limit | default([]) %}
+    {% for tag in hostvars['localhost'].limit | default([]) %}
       {{ ':&tag_' + tag }}
     {% endfor %}
   roles:
@@ -24,7 +24,7 @@
 - name: k8s nodes
   hosts: >-
     tag_k8s:&tag_node
-    {% for tag in tag in hostvars['localhost'].limit | default([]) %}
+    {% for tag in hostvars['localhost'].limit | default([]) %}
       {{ ':&tag_' + tag }}
     {% endfor %}
   tasks:
