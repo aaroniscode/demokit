@@ -8,7 +8,7 @@
 
 - name: fail if subnet not found
   fail:
-    msg: "Run 'aws/configure' to before running ec2 instances"
+    msg: "Run `demokit aws config` before launching ec2 instances"
   when: find_subnet_result.subnets | count != 1
 
 - name: using {{ find_subnet_result.subnets[0].id }}
