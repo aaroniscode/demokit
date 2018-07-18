@@ -1,4 +1,16 @@
 ---
 aws_route53_letsencrypt:
-  - ucp1
-  - dtr1
+  ucp:
+    remaining_days: 30
+    sans:
+      - ucp
+      - ucp1
+      - ucp2
+      - ucp3
+  dtr:
+    remaining_days: 30
+    sans:
+      - dtr
+      - dtr1
+      - dtr2
+      - dtr3

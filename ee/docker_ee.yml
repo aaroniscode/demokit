@@ -20,6 +20,7 @@
     {% endfor -%}
   roles:
     - role: copy_cert
+      copy_cert_name: ucp
     - role: ucp_manager
       ucp_certs: true
       ucp_license: "{{ lookup('file', '/bind/licenses/docker_subscription.lic') | to_json }}"
@@ -50,9 +51,9 @@
     {% endfor -%}
   roles:
     - role: dtr
-      dtr_ca: '"{{ lookup("file", "/bind/certs/" + inventory_hostname + "/ca.pem") }}"'
-      dtr_cert: '"{{ lookup("file", "/bind/certs/" + inventory_hostname + "/cert.pem") }}"'
-      dtr_key: '"{{ lookup("file", "/bind/certs/" + inventory_hostname + "/key.pem") }}"'
+      dtr_ca: '"{{ lookup("file", "/bind/certs/dtr." + aws_route53_domain + "/ca.pem") }}"'
+      dtr_cert: '"{{ lookup("file", "/bind/certs/dtr." + aws_route53_domain + "/cert.pem") }}"'
+      dtr_key: '"{{ lookup("file", "/bind/certs/dtr." + aws_route53_domain + "/key.pem") }}"'
       dtr_ucp_node: "{{ hostvars[groups['tag_registry_nodes'] | first].inventory_hostname_short }}"
   tags:
     - dtr

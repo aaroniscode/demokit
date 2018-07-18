@@ -8,17 +8,17 @@
 
   - name: copy private key to {{ inventory_hostname }}
     copy:
-      src: /bind/certs/{{ inventory_hostname }}/key.pem
+      src: /bind/certs/{{ copy_cert_name }}.{{ aws_route53_domain }}/key.pem
       dest: /etc/demokit/certs/{{ inventory_hostname }}/key.pem
 
   - name: copy certificate to {{ inventory_hostname }}
     copy:
-      src: /bind/certs/{{ inventory_hostname }}/cert.pem
+      src: /bind/certs/{{ copy_cert_name }}.{{ aws_route53_domain }}/cert.pem
       dest: /etc/demokit/certs/{{ inventory_hostname }}/cert.pem
 
-  - name: copy intermediate certificate to {{ inventory_hostname }}
+  - name: copy ca certificate to {{ inventory_hostname }}
     copy:
-      src: /bind/certs/{{ inventory_hostname }}/ca.pem
+      src: /bind/certs/{{ copy_cert_name }}.{{ aws_route53_domain }}/ca.pem
       dest: /etc/demokit/certs/{{ inventory_hostname }}/ca.pem
 
   become: true

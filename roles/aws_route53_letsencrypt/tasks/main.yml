@@ -39,8 +39,9 @@
     account_key: "{{ aws_certs_path }}/letsencrypt_account.pem"
     acme_directory: https://acme-v01.api.letsencrypt.org/directory
     challenge: dns-01
-    fullchain: "{{ aws_certs_path }}/{{ item.key }}.{{ aws_route53_domain }}/cert.pem"
     csr: "{{ aws_certs_path }}/{{ item.key }}.{{ aws_route53_domain }}.csr"
+    fullchain: "{{ aws_certs_path }}/{{ item.key }}.{{ aws_route53_domain }}/cert.pem"
+    remaining_days: "{{ item.value.remaining_days | default(omit) }}"
   loop: "{{ aws_route53_letsencrypt | dict2items }}"
   loop_control:
     label: "{{ item.key + '.' + aws_route53_domain }}"
@@ -87,9 +88,10 @@
     account_key: "{{ aws_certs_path }}/letsencrypt_account.pem"
     acme_directory: https://acme-v01.api.letsencrypt.org/directory
     challenge: dns-01
-    fullchain: "{{ aws_certs_path }}/{{ item.item.key }}.{{ aws_route53_domain }}/cert.pem"
     csr: "{{ aws_certs_path }}/{{ item.item.key }}.{{ aws_route53_domain }}.csr"
     data: "{{ item }}"
+    fullchain: "{{ aws_certs_path }}/{{ item.item.key }}.{{ aws_route53_domain }}/cert.pem"
+    remaining_days: "{{ item.item.value.remaining_days | default(omit) }}"
   loop: "{{ le_challenge.results }}"
   loop_control:
     label: "{{ item.item.key + '.' + aws_route53_domain }}"
