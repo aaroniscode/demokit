@@ -4,7 +4,7 @@
 ansible_ssh_private_key_file: /bind/ssh/demokit.pem
 
 # AWS key pair requires a unique name in a region
-aws_key_name: {{ aws_owner_tag }}
+aws_key_name: {{ aws_owner_tag + '-' + aws_project_tag | default('demokit') }}
 
 # Default AWS profile and region to use for all AWS resources
 aws_profile: default
@@ -25,7 +25,7 @@ aws_windows_admin_password: {{ windows_password }}
 
 # Ansible identifies a VPC uniquely using name/CIDR
 # Since VPC CIDRs can be duplicated, a unique name is required
-aws_vpc_name: {{ aws_owner_tag + '-demokit' }}
+aws_vpc_name: {{ aws_owner_tag + '-' + aws_project_tag | default('demokit') }}
 
 # Docker EE URL with an active subscription
 docker_ee_url: {{ docker_ee_url }}
