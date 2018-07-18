@@ -140,7 +140,7 @@ def parser():
     subparser.add_parser('settings', help='reset demo settings, backup any changed files').set_defaults(func=settings)
     subparser.add_parser('setup', help='update demokit configuration').set_defaults(func=setup)
     ssh_parser = subparser.add_parser('ssh', help='ssh into EC2 instance')
-    ssh_parser.add_argument('hostname', help='EC2 instance hostname')
+    ssh_parser.add_argument('hostname', help='EC2 instance short name (without domain)')
     ssh_parser.set_defaults(func=ssh)
 
     aws_subparser = aws_parser.add_subparsers(
@@ -356,10 +356,11 @@ def main():
     parser()
 
 def welcome():
-    print('Welcome to demokit!  You need a local directory to save settings.\n')
-    print('    mkdir ~/demokit\n')
-    print('Create an alias, because life. Then run demokit.\n')
-    print('    alias demokit="docker run --rm -v ~/demokit:/bind -it demokit/demokit"\n')
+    print('Welcome to demokit!  A directory for settings is required. An alias is recommended.')
+    print('Review the commands below and customize. Or just copy/paste:\n')
+    print('    mkdir ~/demokit')
+    print('    echo "alias demokit=\'docker run --rm -v ~/demokit:/bind -it demokit/demokit\'" >> ~/.bashrc')
+    print('    source ~/.bashrc')
     print('    demokit\n')
 
 if __name__ == '__main__':
