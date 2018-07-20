@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [v0.5.0] - 2018-07-20
 ### Added
 - demokit is now a container! No software to install besides the Docker engine
 - demokit uses a single bind mounted directory for local settings -- you can use a cloud service like iCloud Drive or Dropbox to share configuration across computers
@@ -55,6 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Populate UCP collections
 - Customize volumes for ec2 instances
 
-[Unreleased]: https://github.com/gitamiller/demo-kit/compare/master...devel
-[v0.4.0]: https://github.com/gitamiller/demo-kit/compare/v0.3.0...v0.4.0
-[v0.3.0]: https://github.com/gitamiller/demo-kit/compare/v0.2.0...v0.3.0
+[Unreleased]: https://github.com/gitamiller/demokit/compare/master...devel
+[v0.5.0]: https://github.com/gitamiller/demokit/compare/v0.4.0...v0.5.0
+[v0.4.0]: https://github.com/gitamiller/demokit/compare/v0.3.0...v0.4.0
+[v0.3.0]: https://github.com/gitamiller/demokit/compare/v0.2.0...v0.3.0
