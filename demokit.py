@@ -323,12 +323,20 @@ def setup_windows():
 
 def settings(args):
     call(['ansible-playbook', '-i', 'inventory/base', 'setup/settings.yml'])
-    print('demokit setup is complete! Before installing your demo, configure AWS VPC, security groups and letsencrypt certs\n')
+    print('demokit is setup! Before installing a demo, run the command below to configure AWS VPC, security groups and letsencrypt certs\n')
     print('    demokit aws config\n')
 
 def ssh(args):
     create_ssh_config()
     call(['ssh', '-t', sys.argv[2]])
+
+def welcome():
+    print('Welcome to demokit!  A directory for settings is required. An alias is recommended.')
+    print('Review the commands below and customize. Or just copy/paste:\n')
+    print('    mkdir ~/demokit')
+    print('    echo "alias demokit=\'docker run --rm -v ~/demokit:/bind -it demokit/demokit\'" >> ~/.bashrc')
+    print('    source ~/.bashrc')
+    print('    demokit\n')
 
 def main():
     ascii_art()
@@ -354,14 +362,6 @@ def main():
         return
 
     parser()
-
-def welcome():
-    print('Welcome to demokit!  A directory for settings is required. An alias is recommended.')
-    print('Review the commands below and customize. Or just copy/paste:\n')
-    print('    mkdir ~/demokit')
-    print('    echo "alias demokit=\'docker run --rm -v ~/demokit:/bind -it demokit/demokit\'" >> ~/.bashrc')
-    print('    source ~/.bashrc')
-    print('    demokit\n')
 
 if __name__ == '__main__':
    main()
