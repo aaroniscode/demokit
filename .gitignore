@@ -1,4 +1,1 @@
-inventory/ec2.ini
-inventory/ec2.py
-inventory/group_vars/all.yml
 **/.DS_Store
