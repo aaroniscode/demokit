@@ -49,6 +49,24 @@ To remove the demo instances:
 demokit ee terminate
 ```
 
+You can shutdown the instances to reduce costs
+
+```bash
+demokit ee stop
+```
+
+And start them back up quickly:
+
+```bash
+demokit ee start
+```
+
+If you want to add Windows nodes:
+
+```bash
+demokit ee windows
+```
+
 ## Customize
 
 In your demokit settings directory, ~/demokit/settings, you can edit the YAML config files to customize the demo to your needs.
