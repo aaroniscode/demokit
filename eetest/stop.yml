@@ -1,0 +1,8 @@
+---
+- import_playbook: /demokit/common/command_line.yml
+  vars:
+    title: Stop Docker EE test instances
+    limit_to_tags:
+      - eetest
+
+- import_playbook: /demokit/aws/stop.yml

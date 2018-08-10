@@ -1,7 +1,6 @@
 ---
 - name: install Docker engine
   hosts: >-
-    tag_ee
     {% for tag in hostvars['localhost'].limit | default([]) -%}
       {{ ':&tag_' + tag }}
     {% endfor -%}
@@ -12,18 +11,28 @@
   vars_files:
     - /bind/settings/docker_ee.yml
 
-- name: install UCP
+- name: create manager_nodes group
   hosts: >-
-    tag_ee:&tag_manager_nodes[0]
+    tag_manager_nodes
     {% for tag in hostvars['localhost'].limit | default([]) -%}
       {{ ':&tag_' + tag }}
     {% endfor -%}
+  gather_facts: false
+  tasks:
+    - group_by:
+        key: manager_nodes
+  tags:
+    - ucp
+
+- name: install UCP
+  hosts: manager_nodes[0]
   roles:
     - role: copy_cert
       copy_cert_name: ucp
     - role: ucp_manager
       ucp_certs: true
       ucp_license: "{{ lookup('file', '/bind/licenses/docker_subscription.lic') | to_json }}"
+      ucp_url: https://{{ ucp_node_name | default('ucp1') }}.{{ aws_route53_domain }}
   tags:
     - ucp
   vars_files:
@@ -31,7 +40,7 @@
 
 - name: join worker nodes
   hosts: >-
-    tag_ee:&tag_worker_nodes
+    tag_worker_nodes
     {% for tag in hostvars['localhost'].limit | default([]) -%}
       {{ ':&tag_' + tag }}
     {% endfor -%}
@@ -43,18 +52,29 @@
   vars_files:
     - /bind/settings/docker_ee.yml
 
-- name: install DTR
+- name: create registry_nodes group
   hosts: >-
-    tag_ee:&tag_registry_nodes[0]
+    tag_registry_nodes
     {% for tag in hostvars['localhost'].limit | default([]) -%}
       {{ ':&tag_' + tag }}
     {% endfor -%}
+  gather_facts: false
+  tasks:
+    - group_by:
+        key: registry_nodes
+  tags:
+    - dtr
+
+- name: install DTR
+  hosts: registry_nodes[0]
   roles:
     - role: dtr
       dtr_ca: '"{{ lookup("file", "/bind/certs/dtr." + aws_route53_domain + "/ca.pem") }}"'
       dtr_cert: '"{{ lookup("file", "/bind/certs/dtr." + aws_route53_domain + "/cert.pem") }}"'
       dtr_key: '"{{ lookup("file", "/bind/certs/dtr." + aws_route53_domain + "/key.pem") }}"'
       dtr_ucp_node: "{{ hostvars[groups['tag_registry_nodes'] | first].inventory_hostname_short }}"
+      dtr_url: https://{{ dtr_node_name | default('dtr1') }}.{{ aws_route53_domain }}
+      ucp_url: https://{{ ucp_node_name | default('ucp1') }}.{{ aws_route53_domain }}
   tags:
     - dtr
   vars_files:
@@ -79,6 +99,8 @@
   tasks:
     - include_role:
         name: ucp_rbac
+      vars:
+        ucp_url: https://{{ ucp_node_name | default('ucp1') }}.{{ aws_route53_domain }}
       when: docker_ee_populate and 'windows' not in limit
   tags:
     - populate
@@ -88,15 +110,13 @@
     - /bind/settings/ucp_rbac.yml
 
 - name: populate DTR with demo data
-  hosts: >-
-    tag_ee:&tag_registry_nodes[0]
-    {% for tag in hostvars['localhost'].limit | default([]) -%}
-      {{ ':&tag_' + tag }}
-    {% endfor -%}
+  hosts: registry_nodes[0]
   gather_facts: false
   tasks:
     - include_role:
         name: dtr_repos
+      vars:
+        dtr_url: https://{{ dtr_node_name | default('dtr1') }}.{{ aws_route53_domain }}
       when: docker_ee_populate
   tags:
     - populate

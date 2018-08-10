@@ -27,7 +27,7 @@ def check_eetest():
     vars = yaml.load(file('/bind/demokit.yml', 'r'))
 
     eetest_req_vars = ['docker_hub_username', 'docker_hub_email', 'docker_hub_password',
-        'eetest_engine_version', 'eetest_ucp_version', 'eetest_dtr_version']
+        'eetest_engine_channel', 'eetest_ucp_version', 'eetest_dtr_version']
 
     if not all(key in vars and vars[key] is not None for key in eetest_req_vars):
         setup_eetest()
@@ -101,9 +101,6 @@ def ee_windows(args):
     check_windows()
     run_ansible(args)
 
-def eetest(args):
-    print('Feature under development...')
-
 def eetest_install(args):
     check_ee()
     check_eetest()
@@ -135,7 +132,7 @@ def parser():
     aws_parser = subparser.add_parser('aws', help='commands to manage AWS resources')
     debug_parser = subparser.add_parser('debug').set_defaults(func=debug)
     ee_parser = subparser.add_parser('ee', help='commands to demo Docker EE 2.0', parents=[parent_parser])
-    eetest_parser = subparser.add_parser('eetest', help='commands to demo Docker EE test versions (coming soon)').set_defaults(func=eetest)
+    eetest_parser = subparser.add_parser('eetest', help='commands to demo Docker EE test versions', parents=[parent_parser])
     k8s_parser = subparser.add_parser('k8s', help='commands to demo Kubernetes on Docker CE', parents=[parent_parser])
     subparser.add_parser('settings', help='reset demo settings, backup any changed files').set_defaults(func=settings)
     subparser.add_parser('setup', help='update demokit configuration').set_defaults(func=setup)
@@ -211,48 +208,48 @@ def parser():
     )
     ee_windows_parser.set_defaults(func=ee_windows, play='ee/windows')
 
-    # eetest_subparser = eetest_parser.add_subparsers(
-    #     description=None,
-    #     help='',
-    #     metavar='<subcommand>',
-    #     title='Commands'
-    # )
+    eetest_subparser = eetest_parser.add_subparsers(
+        description=None,
+        help='',
+        metavar='<subcommand>',
+        title='Commands'
+    )
 
-    # eetest_install_parser = eetest_subparser.add_parser(
-    #     'install',
-    #     help='install Docker EE UCP, DTR test versions'
-    # )
-    # eetest_install_parser.set_defaults(func=eetest_install, play='eetest/install')
+    eetest_install_parser = eetest_subparser.add_parser(
+        'install',
+        help='install Docker EE UCP, DTR test versions'
+    )
+    eetest_install_parser.set_defaults(func=eetest_install, play='eetest/install')
 
-    # eetest_start_parser = eetest_subparser.add_parser(
-    #     'start',
-    #     help='start any stopped Docker EE test instances'
-    # )
-    # eetest_start_parser.set_defaults(func=run_ansible, play='eetest/start')
+    eetest_start_parser = eetest_subparser.add_parser(
+        'start',
+        help='start any stopped Docker EE test instances'
+    )
+    eetest_start_parser.set_defaults(func=run_ansible, play='eetest/start')
 
-    # eetest_status_parser = eetest_subparser.add_parser(
-    #     'status',
-    #     help='display running or stopped Docker EE test instances'
-    # )
-    # eetest_status_parser.set_defaults(func=run_ansible, play='eetest/status')
+    eetest_status_parser = eetest_subparser.add_parser(
+        'status',
+        help='display running or stopped Docker EE test instances'
+    )
+    eetest_status_parser.set_defaults(func=run_ansible, play='eetest/status')
 
-    # eetest_stop_parser = eetest_subparser.add_parser(
-    #     'stop',
-    #     help='shut down running Docker EE test instances'
-    # )
-    # eetest_stop_parser.set_defaults(func=run_ansible, play='eetest/stop')
+    eetest_stop_parser = eetest_subparser.add_parser(
+        'stop',
+        help='shut down running Docker EE test instances'
+    )
+    eetest_stop_parser.set_defaults(func=run_ansible, play='eetest/stop')
 
-    # eetest_terminate_parser = eetest_subparser.add_parser(
-    #     'terminate',
-    #     help='terminate only Docker EE test instances'
-    # )
-    # eetest_terminate_parser.set_defaults(func=run_ansible, play='eetest/terminate')
+    eetest_terminate_parser = eetest_subparser.add_parser(
+        'terminate',
+        help='terminate only Docker EE test instances'
+    )
+    eetest_terminate_parser.set_defaults(func=run_ansible, play='eetest/terminate')
 
-    # eetest_windows_parser = eetest_subparser.add_parser(
-    #     'windows',
-    #     help='install Docker EE test version on Windows nodes'
-    # )
-    # eetest_windows_parser.set_defaults(func=eetest_windows, play='eetest/windows')
+    eetest_windows_parser = eetest_subparser.add_parser(
+        'windows',
+        help='install Docker EE test version on Windows nodes'
+    )
+    eetest_windows_parser.set_defaults(func=eetest_windows, play='eetest/windows')
 
     k8s_subparser = k8s_parser.add_subparsers(
         description=None,
