@@ -7,5 +7,5 @@ ucp_license: '{}'
 ucp_namespace: "{{ 'docker' if not ucp_test else 'dockereng' }}"
 ucp_password: password
 ucp_test: false
-ucp_url: ansible_default_ipv4.address
+ucp_url: "{{ ansible_default_ipv4.address }}"
 ucp_version: latest
