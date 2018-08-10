@@ -43,6 +43,12 @@ To launch a Docker EE demo environment:
 demokit ee install
 ```
 
+To launch a SSH into an instance:
+
+```bash
+demokit ssh ucp1
+```
+
 To remove the demo instances:
 
 ```bash
