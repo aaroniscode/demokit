@@ -16,18 +16,21 @@
         be a Docker employee to get that access.
 
         Docker Hub ID?
+      default: "{{ docker_hub_username | default(None) }}"
 
     - name: setup_docker_hub_email
       private: no
       prompt: |
 
         Docker Hub email?
+      default: "{{ docker_hub_email | default(None) }}"
 
     - name: setup_docker_hub_password
       private: yes
       prompt: |
 
         Docker Hub password?
+      default: "{{ docker_hub_password | default(None) }}"
 
     - name: setup_eetest_engine_channel
       private: no
