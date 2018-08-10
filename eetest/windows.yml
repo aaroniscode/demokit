@@ -1,0 +1,12 @@
+---
+- import_playbook: /demokit/common/command_line.yml
+  vars:
+    title: Install Docker EE test Windows worker nodes
+    limit_to_tags:
+      - eetest
+      - windows
+
+- import_playbook: /demokit/aws/run.yml
+  tags: instances
+
+- import_playbook: /demokit/ee/docker_ee.yml

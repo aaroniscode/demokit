@@ -30,14 +30,18 @@ aws_vpc_name: {{ aws_owner_tag + '-' + aws_project_tag | default('demokit') }}
 # Docker EE URL with an active subscription
 docker_ee_url: {{ docker_ee_url }}
 
-# URL of the host or URL of the load balancer in front of DTR
-dtr_url: https://dtr1.{{ aws_route53_domain }}
+# Docker Hub Login credentials
+docker_login_email: {{ docker_hub_email }}
+docker_login_password: {{ docker_hub_password }}
+docker_login_username: {{ docker_hub_username }}
+
+# eetest settings
+eetest_engine_channel: {{ eetest_engine_channel }}
+eetest_ucp_version: {{ eetest_ucp_version }}
+eetest_dtr_version: {{ eetest_dtr_version }}
 
 # UCP admin password set during installation
 ucp_password: {{ ucp_password }}
-
-# URL of the host or URL of the load balancer in front of UCP
-ucp_url: https://ucp1.{{ aws_route53_domain }}
 
 # Used to create AWS key pair and matches private key `ansible_ssh_private_key_file`
 ssh_public_key_file: /bind/ssh/demokit.pub

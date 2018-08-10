@@ -1,0 +1,58 @@
+---
+- name: ee setup
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - /bind/demokit.yml
+  vars_prompt:
+
+    - name: setup_docker_hub_username
+      private: no
+      prompt: |
+
+        demokit needs to login to Docker Hub to install test versions of Docker EE.
+
+        You must be a member of a few private Docker Hub organizations and may need to
+        be a Docker employee to get that access.
+
+        Docker Hub ID?
+
+    - name: setup_docker_hub_email
+      private: no
+      prompt: |
+
+        Docker Hub email?
+
+    - name: setup_docker_hub_password
+      private: yes
+      prompt: |
+
+        Docker Hub password?
+
+    - name: setup_eetest_engine_channel
+      private: no
+      prompt: |
+
+        Test engine channel?
+      default: "{{ eetest_engine_channel | default('test') }}"
+
+    - name: setup_eetest_ucp_version
+      private: no
+      prompt: |
+
+        Test UCP version?
+      default: "{{ eetest_ucp_version | default(None) }}"
+
+    - name: setup_eetest_dtr_version
+      private: no
+      prompt: |
+
+        Test DTR version?
+      default: "{{ eetest_dtr_version | default(None) }}"
+
+  tasks:
+
+    - name: save demokit settings file
+      template:
+        src: templates/demokit.yml.j2
+        dest: /bind/demokit.yml

@@ -1,0 +1,20 @@
+---
+- import_playbook: /demokit/common/command_line.yml
+  vars:
+    title: Install Docker EE test version
+    limit_to_tags:
+      - eetest
+      - ubuntu
+
+- import_playbook: /demokit/aws/run.yml
+  tags: instances
+
+- import_playbook: /demokit/ee/docker_ee.yml
+  vars:
+    docker_ee_engine_linux_channel: "{{ eetest_engine_channel }}"
+    dtr_node_name: dtrtest1
+    dtr_test: true
+    dtr_version: "{{ eetest_dtr_version }}"
+    ucp_node_name: ucptest1
+    ucp_test: true
+    ucp_version: "{{ eetest_ucp_version }}"
