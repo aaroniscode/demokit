@@ -110,11 +110,7 @@
     - /bind/settings/ucp_rbac.yml
 
 - name: populate DTR with demo data
-  hosts: >-
-    tag_registry_nodes[0]
-    {% for tag in hostvars['localhost'].limit | default([]) -%}
-      {{ ':&tag_' + tag }}
-    {% endfor -%}
+  hosts: registry_nodes[0]
   gather_facts: false
   tasks:
     - include_role:
